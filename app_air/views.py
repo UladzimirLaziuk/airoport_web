@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 # Create your views here.
 def home(request):
-    return render(request, 'app_air/cxz.html', {})
+    return render(request, 'app_air/index.html', {})
 
 
 def home_title(context=None, name_html=None):
