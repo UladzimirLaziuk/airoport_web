@@ -4,6 +4,7 @@ import shutil
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from django.urls import reverse
 
 from airoport import settings
 from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, replace_static_urls_in_html_file
@@ -16,6 +17,11 @@ from django.contrib.sites.shortcuts import get_current_site
 class City(models.Model):
     name_city = models.CharField(max_length=255, verbose_name='name_city')
     page_title = models.CharField(max_length=255, verbose_name='page_title')
+
+    def __str__(self):
+        return f'{self.name_city}'
+
+
 
 
 class HeroModel(models.Model):
@@ -203,24 +209,24 @@ def get_create_html(sender, instance, created, **kwargs):
     # list_of_models = ('AboutCity', 'AirportServedModel', 'City')
     # if sender.__name__ in list_of_models:
     #     return
+    if created:
+        city_model = instance.city_model
+        name_city = city_model.name_city.lower()
+        object_hero = city_model.heromodel_set.first()
+        dict_data_template = dict()
+        dict_data_template['object_city'] = city_model
+        dict_data_template['object_hero'] = object_hero
+        dict_data_template['object_why_city_airport'] = city_model.whycityairport_set.first()
+        dict_data_template['object_about_city_airport'] = city_model.aboutairportcity_set.first()
+        dict_data_template['object_about_city'] = city_model.aboutcity_set.first()
+        dict_data_template['name_city'] = name_city
 
-    city_model = instance.city_model
-    name_city = city_model.name_city.lower()
-    object_hero = city_model.heromodel_set.first()
-    dict_data_template = dict()
-    dict_data_template['object_city'] = city_model
-    dict_data_template['object_hero'] = object_hero
-    dict_data_template['object_why_city_airport'] = city_model.whycityairport_set.first()
-    dict_data_template['object_about_city_airport'] = city_model.aboutairportcity_set.first()
-    dict_data_template['object_about_city'] = city_model.aboutcity_set.first()
-    dict_data_template['name_city'] = name_city
-
-    list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
-    for file in list_image_file:
-        copy_and_rename_file(filename=file, arg=name_city)
+        list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
+        for file in list_image_file:
+            copy_and_rename_file(filename=file, arg=name_city)
     # current_site = get_current_site(None)
     # messages.add_message(None, messages.SUCCESS, f"Объект успешно создан на сайте {current_site.name}")
-    if created:
+    # if created:
         name_template = settings.NAME_TEMPLATE
         from jinja2 import Environment, FileSystemLoader
         path = os.path.dirname(os.path.abspath(__file__))
