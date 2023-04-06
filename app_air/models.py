@@ -12,8 +12,6 @@ from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 
 
-
-
 class City(models.Model):
     name_city = models.CharField(max_length=255, verbose_name='name_city')
     page_title = models.CharField(max_length=255, verbose_name='page_title')
@@ -22,12 +20,10 @@ class City(models.Model):
         return f'{self.name_city}'
 
 
-
-
 class HeroModel(models.Model):
     hero_title = models.CharField(max_length=255, verbose_name='hero_title')
     # hero_image_name = models.CharField(max_length=255, verbose_name='hero_image_name')
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE)
+    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='hero_obj')
 
 
 # class WhyAirport(models.Model):
@@ -36,19 +32,19 @@ class HeroModel(models.Model):
 
 
 class WhyCityAirport(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE)
+    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='why_city_obj')
     why_title = models.CharField(max_length=255, verbose_name='Why City Airport?')
     description = models.TextField()
 
 
 class AboutAirportCity(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE)
+    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='about_airport')
     about_title = models.CharField(max_length=255, verbose_name='About City Airport?')
     description = models.TextField()
 
 
 class AboutCity(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE)
+    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='about_city_obj')
     about_title = models.CharField(max_length=255, verbose_name='About City')
     description = models.TextField()
 
@@ -199,11 +195,6 @@ class DescriptionModel(models.Model):
 #                                      related_name='in_flight_video_model_obj')
 
 
-
-
-
-
-
 @receiver(post_save, sender=AboutCity)
 def get_create_html(sender, instance, created, **kwargs):
     # list_of_models = ('AboutCity', 'AirportServedModel', 'City')
@@ -224,9 +215,9 @@ def get_create_html(sender, instance, created, **kwargs):
         list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
         for file in list_image_file:
             copy_and_rename_file(filename=file, arg=name_city)
-    # current_site = get_current_site(None)
-    # messages.add_message(None, messages.SUCCESS, f"Объект успешно создан на сайте {current_site.name}")
-    # if created:
+        # current_site = get_current_site(None)
+        # messages.add_message(None, messages.SUCCESS, f"Объект успешно создан на сайте {current_site.name}")
+        # if created:
         name_template = settings.NAME_TEMPLATE
         from jinja2 import Environment, FileSystemLoader
         path = os.path.dirname(os.path.abspath(__file__))
@@ -256,4 +247,3 @@ def get_create_html(sender, instance, created, **kwargs):
             f.write(''.join(lines))
         parse_file_compile(path_templates)
         replace_static_urls_in_html_file(path_templates)
-
