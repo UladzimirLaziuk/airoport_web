@@ -1,5 +1,8 @@
 *.pyc
 venv/
-airoport/__pycache__/*
+
 *.json
 db.sqlite3
+
+app_air/__pycache__/
+airoport/__pycache__/

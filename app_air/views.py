@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated
 
 from app_air.models import City
 from app_air.serializers import CitySerializer
@@ -18,11 +19,13 @@ def home_title(context=None, name_html=None):
 class CityListAPIView(generics.ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class CityDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class CityView(TemplateView):
