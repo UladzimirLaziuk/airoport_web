@@ -3,8 +3,11 @@ from django.views.generic import TemplateView
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 
-from app_air.models import City
-from app_air.serializers import CitySerializer
+from app_air.models import City, BodySection, BodySubSection, BodySubSectionDescription, AudienceSection, \
+    AudienceSubSectionDescription, AudienceSubSection
+from app_air.serializers import CitySerializer, HeroHeroSectionSerializer, BodySectionSerializer, \
+    BodySubSectionSerializer, BodySubSectionDescriptionSerializer, AudienceSectionSerializer, \
+    AudienceSubSectionSerializer, AudienceSubSectionDescriptionSerializer
 
 
 # Create your views here.
@@ -35,3 +38,39 @@ class CityView(TemplateView):
         city_name = kwargs.get('city_name')
         self.template_name = self.template_name.format(city_name)
         return super().get(request, *args, **kwargs)
+
+
+class BodyDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BodySection.objects.all()
+    serializer_class = BodySectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class BodySubSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BodySubSection.objects.all()
+    serializer_class = BodySubSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class BodySubSectionDescriptionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BodySubSectionDescription.objects.all()
+    serializer_class = BodySubSectionDescriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AudienceSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AudienceSection.objects.all()
+    serializer_class = AudienceSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AudienceSubSectionDescriptionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AudienceSubSectionDescription.objects.all()
+    serializer_class = AudienceSubSectionDescriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AudienceSubSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AudienceSubSection.objects.all()
+    serializer_class = AudienceSubSectionSerializer
+    permission_classes = [IsAuthenticated]

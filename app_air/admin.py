@@ -7,7 +7,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import City, HeroModel, WhyCityAirport, AboutAirportCity, AboutCity
+from .models import City, WhyCityAirport, AboutAirportCity, AboutCity, HeroSection, HeroSubHeadline, BodySection, \
+    BodySubSection, BodySubSectionDescription, AudienceSection, AudienceSubSection, AudienceSubSectionDescription
 from django import forms
 from django.contrib.admin import ModelAdmin
 from django.forms import CheckboxSelectMultiple, TextInput, BaseInlineFormSet
@@ -16,11 +17,12 @@ from django.contrib.admin import site, AdminSite, ModelAdmin, TabularInline, Sta
 from django.db import models
 
 
-class HeroModelInline(admin.StackedInline):
-    model = HeroModel
-    extra = 1
-    can_delete = False
-    max_num = 1
+# class HeroModelInline(admin.StackedInline):
+#     model = HeroModel
+#     extra = 1
+#     can_delete = False
+#     max_num = 1
+#     exclude = ('image_hero_url_jpg', 'image_hero_url_webp')
 
 
 class WhyCityAirportInline(admin.StackedInline):
@@ -52,7 +54,7 @@ class AboutCityInline(admin.StackedInline):
 
 
 class AirportAdmin(admin.ModelAdmin):
-    inlines = (HeroModelInline, WhyCityAirportInline, AboutAirportCityInline, AboutCityInline)
+    inlines = (WhyCityAirportInline, AboutAirportCityInline, AboutCityInline)
     list_display = ('name_city', 'my_field_link')
 
     def my_field_link(self, obj):
@@ -89,4 +91,12 @@ def do_something_on_save(sender, instance, created, **kwargs):
         print("MyInlineModel with id {} has been updated".format(instance.id))
 
 
-admin.site.register(City, AirportAdmin)
+admin.site.register(City)
+admin.site.register(HeroSection)
+admin.site.register(HeroSubHeadline)
+admin.site.register(BodySection)
+admin.site.register(BodySubSection)
+admin.site.register(BodySubSectionDescription)
+admin.site.register(AudienceSection)
+admin.site.register(AudienceSubSection)
+admin.site.register(AudienceSubSectionDescription)
