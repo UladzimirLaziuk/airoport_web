@@ -56,7 +56,7 @@ Section: Body
 class BodySection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_body')
     body_image_name = models.CharField(max_length=255, verbose_name='main body image name')
-    title = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
+    section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
 
 
 class BodySubSection(models.Model):
