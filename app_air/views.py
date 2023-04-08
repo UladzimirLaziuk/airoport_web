@@ -4,10 +4,13 @@ from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 
 from app_air.models import City, BodySection, BodySubSection, BodySubSectionDescription, AudienceSection, \
-    AudienceSubSectionDescription, AudienceSubSection
+    AudienceSubSectionDescription, AudienceSubSection, CampaignTypesSection, CampaignTypesSubSection, \
+    CampaignTypesSubSectionDescription, MediaSolutionsSection, MediaSolutionsTabSection
 from app_air.serializers import CitySerializer, HeroHeroSectionSerializer, BodySectionSerializer, \
     BodySubSectionSerializer, BodySubSectionDescriptionSerializer, AudienceSectionSerializer, \
-    AudienceSubSectionSerializer, AudienceSubSectionDescriptionSerializer
+    AudienceSubSectionSerializer, AudienceSubSectionDescriptionSerializer, CampaignTypesSectionSerializer, \
+    CampaignTypesSubSectionSerializer, CampaignTypesSubSectionDescriptionSerializer, MediaSolutionsTabSectionSerializer, \
+    MediaSolutionsSectionSerializer
 
 
 # Create your views here.
@@ -73,4 +76,44 @@ class AudienceSubSectionDescriptionDetail(generics.RetrieveUpdateDestroyAPIView)
 class AudienceSubSectionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AudienceSubSection.objects.all()
     serializer_class = AudienceSubSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CampaignTypesSectionListAPIViews(generics.ListCreateAPIView):
+    queryset = CampaignTypesSection.objects.all()
+    serializer_class = CampaignTypesSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CampaignTypesSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CampaignTypesSection.objects.all()
+    serializer_class = CampaignTypesSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CampaignTypesSubSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CampaignTypesSubSection.objects.all()
+    serializer_class = CampaignTypesSubSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+class CampaignTypesSubSectionDescriptionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CampaignTypesSubSectionDescription.objects.all()
+    serializer_class = CampaignTypesSubSectionDescriptionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+
+
+class MediaSolutionsSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = MediaSolutionsSection.objects.all()
+    serializer_class = MediaSolutionsSectionSerializer
+    permission_classes = [IsAuthenticated]
+
+
+
+
+
+class MediaSolutionsTabSectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = MediaSolutionsTabSection.objects.all()
+    serializer_class = MediaSolutionsTabSectionSerializer
     permission_classes = [IsAuthenticated]

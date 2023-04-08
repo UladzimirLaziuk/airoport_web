@@ -94,10 +94,48 @@ class AudienceSectionSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class CampaignTypesSubSectionDescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CampaignTypesSubSectionDescription
+        fields = '__all__'
+
+
+class CampaignTypesSubSectionSerializer(serializers.ModelSerializer):
+    subsection_campaign_types_description = CampaignTypesSubSectionDescriptionSerializer(many=True)
+
+    class Meta:
+        model = models.CampaignTypesSubSection
+        fields = '__all__'
+
+
+class CampaignTypesSectionSerializer(serializers.ModelSerializer):
+    subsection_campaign_types = CampaignTypesSubSectionSerializer(many=True)
+
+    class Meta:
+        model = models.CampaignTypesSection
+        fields = '__all__'
+
+
+class MediaSolutionsTabSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.MediaSolutionsTabSection
+        fields = '__all__'
+
+
+class MediaSolutionsSectionSerializer(serializers.ModelSerializer):
+    media_solutions_tab = MediaSolutionsTabSectionSerializer(many=True)
+
+    class Meta:
+        model = models.MediaSolutionsSection
+        # fields = '__all__'
+        exclude = 'id',
+
+
 class CitySerializer(serializers.HyperlinkedModelSerializer):
     section_hero = HeroHeroSectionSerializer(many=True)
     section_body = BodySectionSerializer(many=True)
     section_audience = AudienceSectionSerializer(many=True)
+    section_media_solutions = MediaSolutionsSectionSerializer(many=True)
 
     class Meta:
         model = models.City

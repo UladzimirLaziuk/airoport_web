@@ -9,8 +9,8 @@ from django.utils.html import format_html
 
 from .models import City, WhyCityAirport, AboutAirportCity, AboutCity, HeroSection, HeroSubHeadline, BodySection, \
     BodySubSection, BodySubSectionDescription, AudienceSection, AudienceSubSection, AudienceSubSectionDescription, \
-    CampaignTypesHeroSection, CampaignTypesSubSection, CampaignTypesSubSectionDescription, MediaSolutionsSection, \
-    MediaSolutionsTabSection
+    CampaignTypesSubSection, CampaignTypesSubSectionDescription, MediaSolutionsSection, \
+    MediaSolutionsTabSection, CampaignTypesSection
 from django import forms
 from django.contrib.admin import ModelAdmin
 from django.forms import CheckboxSelectMultiple, TextInput, BaseInlineFormSet
@@ -102,7 +102,8 @@ admin.site.register(BodySubSectionDescription)
 admin.site.register(AudienceSection)
 admin.site.register(AudienceSubSection)
 admin.site.register(AudienceSubSectionDescription)
-admin.site.register(CampaignTypesHeroSection)
+admin.site.register(CampaignTypesSection)
+# admin.site.register(CampaignTypesHeroSection)
 admin.site.register(CampaignTypesSubSection)
 admin.site.register(CampaignTypesSubSectionDescription)
 admin.site.register(MediaSolutionsSection)

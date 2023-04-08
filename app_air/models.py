@@ -145,14 +145,14 @@ class CampaignTypesSection(models.Model):
                              default='Airport Campaign Types')
 
 
-class CampaignTypesHeroSection(models.Model):
-    city_model = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
-                                   related_name='section_campaign_types')
-    title = models.CharField(max_length=255)
+# class CampaignTypesHeroSection(models.Model):
+#     city_model = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
+#                                    related_name='section_campaign_types')
+#     title = models.CharField(max_length=255)
 
 
 class CampaignTypesSubSection(models.Model):
-    subsection_body = models.ForeignKey(CampaignTypesHeroSection, on_delete=models.CASCADE,
+    subsection_body = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
                                         related_name='subsection_campaign_types')
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
     image_name = models.CharField(max_length=255)
@@ -175,7 +175,7 @@ Section: Media Solutions
 
 
 class MediaSolutionsSection(models.Model):
-    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='media_solutions')
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_media_solutions')
 
 
 class MediaSolutionsTabSection(models.Model):
