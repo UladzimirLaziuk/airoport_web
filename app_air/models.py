@@ -125,7 +125,8 @@ class AudienceSubSection(models.Model):
                                       related_name='accordions')
 
     def __str__(self):
-        return f"AudienceSubSection - {self.audience_body.section_body.name_city}"
+        return f"AudienceSubSection - {self.audience_body.section_body.name_city}-" \
+               f"{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class AudienceSubSectionDescription(models.Model):
