@@ -199,7 +199,8 @@ class CampaignTypesSubSection(models.Model):
     image_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}"
+        return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}-" \
+               f"{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class CampaignTypesSubSectionDescription(models.Model):
@@ -215,8 +216,9 @@ class CampaignTypesSubSectionDescription(models.Model):
 
     def __str__(self):
         return f"CampaignTypesSubSectionDescription -" \
-               f" {self.subsection_model.subsection_body.model_city.name_city}" \
-               f"-{self.count_paragraphs}"
+               f" {self.subsection_model.subsection_body.model_city.name_city}"  \
+            f"-{'-'.join(self.subsection_model.image_name.split('_')[-2:])}" \
+            f"-{self.count_paragraphs}"
 
 
 """
