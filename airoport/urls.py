@@ -41,9 +41,9 @@ urlpatterns = [
          name='campaign-types-section-descriptions-detail'),
     #
     path('media_solutions-section/<int:pk>/', MediaSolutionsSectionDetail.as_view(),
-         name='campaign-types-section-detail'),
+         name='mediasolutionssection-detail'),
     path('media_solutions-tab-section/<int:pk>/', MediaSolutionsTabSectionDetail.as_view(),
-         name='media_solutions-tab-section-detail'),
+         name='mediasolutionstabsection-detail'),
     # path('campaign-types-section-descriptions/<int:pk>/', CampaignTypesSubSectionDescriptionDetail.as_view(),
     #      name='campaign-types-section-descriptions-detail'),
 ]

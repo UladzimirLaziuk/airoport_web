@@ -11,8 +11,6 @@ from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, re
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 
-
-
 ###########################################################################################################
 """Section Title: Hero
 
@@ -27,6 +25,9 @@ class City(models.Model):
     code_city = models.CharField(max_length=255, verbose_name='code_city')
     page_title = models.CharField(max_length=255, verbose_name='Page Title')
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
     def __str__(self):
         return f'{self.name_city}'
 
@@ -34,14 +35,16 @@ class City(models.Model):
 class HeroSection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero')
     hero_image_name = models.CharField(max_length=255, verbose_name='hero image name')
-    # title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
+    title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
 
-
+    def __str__(self):
+        return f"HeroHeadline - {self.city_model.name_city}"
 class HeroSubHeadline(models.Model):
     section_hero = models.ForeignKey(HeroSection, on_delete=models.CASCADE, related_name='section_hero_subheading')
     description = models.TextField()
 
-
+    def __str__(self):
+        return f"HeroSubHeadline - {self.section_hero.city_model.name_city}"
 '''
 Section: Body
 
@@ -58,16 +61,25 @@ class BodySection(models.Model):
     body_image_name = models.CharField(max_length=255, verbose_name='main body image name')
     section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
 
+    def __str__(self):
+        return f"BodySection - {self.city_model.name_city}"
+
 
 class BodySubSection(models.Model):
-    section_body = models.ForeignKey(BodySection, on_delete=models.CASCADE, related_name='subsection_body')
+    section_body = models.ForeignKey(BodySection, on_delete=models.CASCADE, related_name='tabs')
     title = models.CharField(max_length=255, verbose_name='subsection body title')
+
+    def __str__(self):
+        return f"BodySubSection - {self.section_body.city_model.name_city}"
 
 
 class BodySubSectionDescription(models.Model):
-    description = models.TextField()
+    text = models.TextField()
     subsection_body = models.ForeignKey(BodySubSection, on_delete=models.CASCADE,
-                                        related_name='subsection_body_description')
+                                        related_name='paragraphs')
+
+    def __str__(self):
+        return f"BodySubSectionDescription - {self.subsection_body.section_body.city_model.name_city}"
 
 
 """
@@ -94,17 +106,26 @@ class AudienceSection(models.Model):
     title = models.CharField(max_length=255, verbose_name='subsection body title',
                              default='An audience for any campaign')
 
+    def __str__(self):
+        return f"AudienceSection- {self.section_body.name_city}"
+
 
 class AudienceSubSection(models.Model):
-    audience_subsection_image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
+    image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
     audience_body = models.ForeignKey(AudienceSection, on_delete=models.CASCADE,
-                                      related_name='audience_subsection')
+                                      related_name='accordions')
+
+    def __str__(self):
+        return f"AudienceSubSection - {self.audience_body.section_body.name_city}"
 
 
 class AudienceSubSectionDescription(models.Model):
-    description = models.TextField()
+    text = models.TextField()
     audience_subsection_model = models.ForeignKey(AudienceSubSection, on_delete=models.CASCADE,
-                                                  related_name='audience_subsection_descriptions')
+                                                  related_name='paragraphs')
+
+    def __str__(self):
+        return f"AudienceSubSectionDescription - {self.audience_subsection_model.audience_body.section_body.name_city}"
 
 
 """
@@ -144,6 +165,9 @@ class CampaignTypesSection(models.Model):
     title = models.CharField(max_length=255, verbose_name='section CampaignTypes title',
                              default='Airport Campaign Types')
 
+    def __str__(self):
+        return f"CampaignTypesSection - {self.model_city.name_city}"
+
 
 # class CampaignTypesHeroSection(models.Model):
 #     city_model = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
@@ -157,11 +181,17 @@ class CampaignTypesSubSection(models.Model):
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
     image_name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}"
+
 
 class CampaignTypesSubSectionDescription(models.Model):
     description = models.TextField()
     subsection_model = models.ForeignKey(CampaignTypesSubSection, on_delete=models.CASCADE,
                                          related_name='subsection_campaign_types_description')
+
+    def __str__(self):
+        return f"CampaignTypesSubSectionDescription - {self.subsection_model.subsection_body.model_city.name_city}"
 
 
 """
@@ -177,299 +207,220 @@ Section: Media Solutions
 class MediaSolutionsSection(models.Model):
     model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_media_solutions')
 
+    def __str__(self):
+        return f"MediaSolutionsSection - {self.model_city.name_city}"
+
 
 class MediaSolutionsTabSection(models.Model):
-    model_city = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE, related_name='media_solutions_tab')
+    model_section = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE,
+                                      related_name='media_solutions_tab')
     image_name = models.CharField(max_length=255)
 
-################################################################################################################
-class SectionHeroModel(models.Model):
-    image_hero_url_jpg = models.URLField(blank=True)
-    image_hero_url_webp = models.URLField(blank=True)
-    hero_headline = models.CharField(max_length=255, verbose_name='Hero Headline: title')
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero_model')
-    description = models.TextField()
-
-
-class WhyAirport(models.Model):
-    title = models.CharField(max_length=255, verbose_name='WhyAirport?')
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='why_airport')
-
-
-class WhyAirportDescription(models.Model):
-    description = models.TextField()
-    why_airport = models.ForeignKey(WhyAirport, on_delete=models.CASCADE,
-                                    related_name='why_airport_description')
-
-
-class AboutAirport(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, )
-    title = models.CharField(max_length=255, verbose_name='About City Airport?')
-
-
-class AboutAirportDescription(models.Model):
-    description = models.TextField()
-    about_airport = models.ForeignKey(AboutAirport, on_delete=models.CASCADE,
-                                      related_name='description_about_airport')
-
-#
-# class AboutCity(models.Model):
-#     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='about_city')
-#     title = models.CharField(max_length=255, verbose_name='About City Airport?')
-#
-#
-# class AboutCityDescription(models.Model):
-#     description = models.TextField()
-#     about_airport = models.ForeignKey(AboutCity, on_delete=models.CASCADE,
-#                                       related_name='description_about_city')
-
-
-# class City(models.Model):
-#     name_city = models.CharField(max_length=255, verbose_name='name_city')
-#     page_title = models.CharField(max_length=255, verbose_name='page_title')
-#
-#     def __str__(self):
-#         return f'{self.name_city}'
-
-#
-# class HeroModel(models.Model):
-#     hero_title = models.CharField(max_length=255, verbose_name='hero_title')
-#     image_hero_url_webp = models.URLField(blank=True)
-#     image_hero_url_jpg = models.URLField(blank=True)
-#     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='hero_obj')
-#
-#     def save(self, force_insert=False, force_update=False,
-#              using=None, update_fields=None):
-#         list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
-#         list_name = []
-#         for file in list_image_file:
-#             basename = os.path.basename(file)
-#             name, extension = os.path.splitext(basename)
-#             new_basename_url = '/static/img/home/' + f"{name}_{self.city_model.name_city.lower()}{extension}"
-#             list_name.append(new_basename_url)
-#             # copy_and_rename_file(filename=file, arg=self.city_model.name_city.lower())
-#         self.image_hero_url_jpg, self.image_hero_url_webp = list_name
-#
-#         # instance.save()
-#         return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
-
-
-# class WhyAirport(models.Model):
-#     city_model = models.ForeignKey(City, on_delete=models.CASCADE)
-#     # description_city = models.TextField()
-
-
-class WhyCityAirport(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='why_city_obj')
-    why_title = models.CharField(max_length=255, verbose_name='Why City Airport?')
-    description = models.TextField()
-
-
-class AboutAirportCity(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='about_airport')
-    about_title = models.CharField(max_length=255, verbose_name='About City Airport?')
-    description = models.TextField()
-
-
-class AboutCity(models.Model):
-    city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='about_city_obj')
-    about_title = models.CharField(max_length=255, verbose_name='About City')
-    description = models.TextField()
-
-
-# class DescriptionModelWhyAirport(models.Model):
-#     object_model = models.ForeignKey(WhyAirport, on_delete=models.CASCADE, related_name='why_airports')
-#
-#
-# class AirportAbstractModel(models.Model):
-#     # title = models.CharField(max_length=255, default="Why Airport?")
-#     page_title = models.ForeignKey(PageTitleModel, on_delete=models.CASCADE, default=11)
-#
-#     def __str__(self):
-#         return '%s' % self.title
-
-
-class DescriptionModel(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-
-    class Meta:
-        abstract = True
-
     def __str__(self):
-        return '%s' % self.title
+        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}"
 
 
-#
-# class WhyAirport(AirportAbstractModel):
-#     pass
-#     # description_city = models.TextField()
-#
-#
-# class DescriptionModelWhyAirport(DescriptionModel):
-#     object_model = models.ForeignKey(WhyAirport, on_delete=models.CASCADE, related_name='why_airports')
-#
-#
-# class CaseStudies(AirportAbstractModel):
-#     pass
-#
-#
-# class DescriptionModelCaseStudies(DescriptionModel):
-#     object_model = models.ForeignKey(CaseStudies, on_delete=models.CASCADE, related_name='case_studies_airports')
-#
-#
-# class AirportAudiencesModel(AirportAbstractModel):
-#     pass
-#
-#
-# class AirportAudiencesDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(AirportAudiencesModel, on_delete=models.CASCADE, related_name='airport_audiences')
-#
-#
-# class AirportCampaignTypesModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Airport Campaign Types")
-#
-#
-# class AirportCampaignTypesDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(AirportCampaignTypesModel, on_delete=models.CASCADE,
-#                                      related_name='campaign_types_obj')
-#
-#
-# class WhoWeAreModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Who We Are")
-#
-#
-# class WhoWeAreModelDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(WhoWeAreModel, on_delete=models.CASCADE, related_name='who_we_are_obj')
-#
-#
-# class AirportServedModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Airport Served")
-#
-#
-# class AirportServedDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(AirportServedModel, on_delete=models.CASCADE, related_name='airport_served_obj')
-#
-#
-# class DigitalSolutionsModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Digital Solutions")
-#
-#
-# class DigitalSolutionsDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(DigitalSolutionsModel, on_delete=models.CASCADE,
-#                                      related_name='digital_solutions_obj')
-#
-#
-# class StaticSolutionsModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Static Solutions")
-#
-#
-# class StaticSolutionsDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(StaticSolutionsModel, on_delete=models.CASCADE,
-#                                      related_name='static_solutions_obj')
-#
-#
-# class AirlineClubLoungesModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Airline Club Lounges")
-#
-#
-# class AirlineClubLoungesDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(AirlineClubLoungesModel, on_delete=models.CASCADE,
-#                                      related_name='airline_club_lounges_obj')
-#
-#
-# class SecurityAreaModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Security Area")
-#
-#
-# class SecurityAreaDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(SecurityAreaModel, on_delete=models.CASCADE,
-#                                      related_name='security_area_obj')
-#
-#
-# class WiFiSponsorshipsModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Security Area")
-#
-#
-# class WiFiSponsorshipsDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(WiFiSponsorshipsModel, on_delete=models.CASCADE,
-#                                      related_name='wifi_sponsorships_obj')
-#
-#
-# class ExperientialModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Experiential")
-#
-#
-# class ExperientialDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(ExperientialModel, on_delete=models.CASCADE,
-#                                      related_name='experiential_obj')
-#
-#
-# class ExteriorsModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="Exteriors")
-#
-#
-# class ExteriorsDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(ExteriorsModel, on_delete=models.CASCADE,
-#                                      related_name='exteriors_obj')
-#
-#
-# class InFlightVideoModel(AirportAbstractModel):
-#     title = models.CharField(max_length=255, default="In-Flight Video")
-#
-#
-# class InFlightVideoModelDescriptionModel(DescriptionModel):
-#     object_model = models.ForeignKey(InFlightVideoModel, on_delete=models.CASCADE,
-#                                      related_name='in_flight_video_model_obj')
+################################################################################################################
+def get_dict(id_):
+    dict_data_template = dict()
+    obj_city = City.objects.filter(pk=id_).first()
+    tabs = BodySection.objects.filter(city_model=id_).get().tabs.all()
+    dict_data_template['name_city'] = obj_city.name_city
+    dict_data_template['object_city'] = obj_city
+    dict_data_template['object_hero'] = obj_city.section_hero.first()
+    name_section = BodySection.objects.values_list('section_name', flat=True)
+    dict_data_template['body_subsection_object'] = tabs
+
+    # dict_data_template['object_why_city_airport'] = tabs[0]
+    # dict_data_template['object_about_city_airport'] = tabs[1]
+    # dict_data_template['object_about_city'] = tabs[2]
+
+    dict_data_template['obj_why_city_airport'] = BodySection.objects.first()
+    return dict_data_template
 
 
-@receiver(post_save, sender=AboutCity)
-def get_create_html(sender, instance, created, **kwargs):
-    # list_of_models = ('AboutCity', 'AirportServedModel', 'City')
-    # if sender.__name__ in list_of_models:
-    #     return
-    if created:
-        city_model = instance.city_model
-        name_city = city_model.name_city.lower()
-        object_hero = city_model.hero_obj.first()
-        dict_data_template = dict()
-        dict_data_template['object_city'] = city_model
-        dict_data_template['object_hero'] = object_hero
-        dict_data_template['object_why_city_airport'] = city_model.why_city_obj.first()
-        dict_data_template['object_about_city_airport'] = city_model.about_airport.first()
-        dict_data_template['object_about_city'] = city_model.about_city_obj.first()
-        dict_data_template['name_city'] = name_city
+from django.template import loader
+# @receiver(post_save)
+# def get_create_html(sender, instance, created, **kwargs):
+#         list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection')
+#         if sender.__name__ in list_of_models:
+#             context = get_dict(id_=1)
+#             content = loader.render_to_string('app_air/index.html', context,
+#                                               request=None, using=None)
+#             with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
+#                 fh.write(content)
 
-        list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
-        for file in list_image_file:
-            copy_and_rename_file(filename=file, arg=name_city)
 
-        name_template = settings.NAME_TEMPLATE
-        from jinja2 import Environment, FileSystemLoader
-        path = os.path.dirname(os.path.abspath(__file__))
-        dict_fields = {f.name: getattr(instance, f.name) for f in instance._meta.get_fields() if f.name != 'id'}
-        path_dir_template = "templates/app_air"
-        env = Environment(
-            autoescape=False,
-            loader=FileSystemLoader(os.path.join(path, path_dir_template)),
-            trim_blocks=False)
-        # name_file = instance.page_title
-        directory = os.path.join(path)
-        os.makedirs(directory, exist_ok=True)
-        template = env.get_template(name_template)
-        output_from_parsed_template = template.render(**dict_data_template)
-        # to save the results
-        print(f"{directory}")
-        path_templates = f"{directory}/templates/app_air/{name_city}.html"
-        with open(path_templates, "w") as fh:
-            fh.write(output_from_parsed_template)
-        with open(f"{directory}/templates/app_air/includes/{name_city}.html", "w") as fh:
-            fh.write(output_from_parsed_template)
+# city_model = City.objects.first()
+# name_city = city_model.name_city
+#
+# dict_data_template = dict()
+# dict_data_template['object_city'] = city_model
+# dict_data_template['object_hero'] = object_hero
+# dict_data_template['object_why_city_airport'] = city_model.why_city_obj.first()
+# dict_data_template['object_about_city_airport'] = city_model.about_airport.first()
+# dict_data_template['object_about_city'] = city_model.about_city_obj.first()
+# dict_data_template['name_city'] = name_city
+# dict_data_template['cities'] = MediaSolutionsSection.objects.all()
 
-        with open(path_templates, 'r+') as f:
-            lines = f.readlines()
-            f.seek(0)
-            f.write('{% load static %}\n')
-            f.write(''.join(lines))
-        parse_file_compile(path_templates)
-        replace_static_urls_in_html_file(path_templates)
+
+# list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
+# for file in list_image_file:
+#     copy_and_rename_file(filename=file, arg=name_city)
+#
+# name_template = settings.NAME_TEMPLATE
+# from jinja2 import Environment, FileSystemLoader
+# path = os.path.dirname(os.path.abspath(__file__))
+# dict_fields = {f.name: getattr(instance, f.name) for f in instance._meta.get_fields() if f.name != 'id'}
+# path_dir_template = "templates/app_air"
+# env = Environment(
+#     autoescape=False,
+#     loader=FileSystemLoader(os.path.join(path, path_dir_template)),
+#     trim_blocks=False)
+# # name_file = instance.page_title
+# directory = os.path.join(path)
+# os.makedirs(directory, exist_ok=True)
+# template = env.get_template(name_template)
+# output_from_parsed_template = template.render(**dict_data_template)
+# # to save the results
+# print(f"{directory}")
+# path_templates = f"{directory}/templates/app_air/{name_city}.html"
+# with open(path_templates, "w") as fh:
+#     fh.write(output_from_parsed_template)
+# with open(f"{directory}/templates/app_air/includes/{name_city}.html", "w") as fh:
+#     fh.write(output_from_parsed_template)
+#
+# with open(path_templates, 'r+') as f:
+#     lines = f.readlines()
+#     f.seek(0)
+#     f.write('{% load static %}\n')
+#     f.write(''.join(lines))
+# parse_file_compile(path_templates)
+# replace_static_urls_in_html_file(path_templates)
+
+# @receiver(post_save)
+# def get_create_html(sender, instance, created, **kwargs):
+#     list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection')
+#     if sender.__name__ in list_of_models:
+#         if created:
+#             model_name = sender.__name__.lower()
+#             # получаем все поля связанные с моделью
+#             related_fields = [field for field in instance._meta.get_fields() if field.is_relation]
+#             # проходимся по всем связанным полям
+#             for field in related_fields:
+#                 related_model = field.related_model
+#                 related_model_name = related_model.__name__.lower()
+#                 # related_name = related_model._meta.get_field(related_model_name).related_name
+#
+#                 if hasattr(field, 'related_name'):
+#                     related_objects = getattr(instance, field.related_name).all()
+#                     print(related_objects)
+
+# if hasattr(instance, 'model_section'):
+#     # related_objects = getattr(instance, field.related_name).all()
+#     print('model_section')
+# related_name = related_model._meta.get_field(related_model_name).related_name
+# if hasattr(instance, field.name):
+#     # related_objects = getattr(instance, field.related_name).all()
+#     print(field)
+
+# related_name = Pet._meta.get_field('person').remote_field.get_accessor_name()
+#
+# related_query_name = Pet._meta.get_field('person').related_query_name()
+# получаем все объекты связанные с текущим объектом instance
+# related_objects = getattr(instance, related_model_name + '_set').all()
+# city_model = instance.city_model
+# name_city = city_model.name_city.lower()
+# object_hero = city_model.hero_obj.first()
+# dict_data_template = dict()
+# dict_data_template['object_city'] = city_model
+# dict_data_template['object_hero'] = object_hero
+# dict_data_template['object_why_city_airport'] = city_model.why_city_obj.first()
+# dict_data_template['object_about_city_airport'] = city_model.about_airport.first()
+# dict_data_template['object_about_city'] = city_model.about_city_obj.first()
+# dict_data_template['name_city'] = name_city
+#
+# list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
+# for file in list_image_file:
+#     copy_and_rename_file(filename=file, arg=name_city)
+#
+# name_template = settings.NAME_TEMPLATE
+# from jinja2 import Environment, FileSystemLoader
+# path = os.path.dirname(os.path.abspath(__file__))
+# dict_fields = {f.name: getattr(instance, f.name) for f in instance._meta.get_fields() if f.name != 'id'}
+# path_dir_template = "templates/app_air"
+# env = Environment(
+#     autoescape=False,
+#     loader=FileSystemLoader(os.path.join(path, path_dir_template)),
+#     trim_blocks=False)
+# # name_file = instance.page_title
+# directory = os.path.join(path)
+# os.makedirs(directory, exist_ok=True)
+# template = env.get_template(name_template)
+# output_from_parsed_template = template.render(**dict_data_template)
+# # to save the results
+# print(f"{directory}")
+# path_templates = f"{directory}/templates/app_air/{name_city}.html"
+# with open(path_templates, "w") as fh:
+#     fh.write(output_from_parsed_template)
+# with open(f"{directory}/templates/app_air/includes/{name_city}.html", "w") as fh:
+#     fh.write(output_from_parsed_template)
+#
+# with open(path_templates, 'r+') as f:
+#     lines = f.readlines()
+#     f.seek(0)
+#     f.write('{% load static %}\n')
+#     f.write(''.join(lines))
+# parse_file_compile(path_templates)
+# replace_static_urls_in_html_file(path_templates)
+
+# @receiver(post_save, sender=AboutCity)
+# def get_create_html(sender, instance, created, **kwargs):
+#     # list_of_models = ('AboutCity', 'AirportServedModel', 'City')
+#     # if sender.__name__ in list_of_models:
+#     #     return
+#     if created:
+#         city_model = instance.city_model
+#         name_city = city_model.name_city.lower()
+#         object_hero = city_model.hero_obj.first()
+#         dict_data_template = dict()
+#         dict_data_template['object_city'] = city_model
+#         dict_data_template['object_hero'] = object_hero
+#         dict_data_template['object_why_city_airport'] = city_model.why_city_obj.first()
+#         dict_data_template['object_about_city_airport'] = city_model.about_airport.first()
+#         dict_data_template['object_about_city'] = city_model.about_city_obj.first()
+#         dict_data_template['name_city'] = name_city
+#
+#         list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
+#         for file in list_image_file:
+#             copy_and_rename_file(filename=file, arg=name_city)
+#
+#         name_template = settings.NAME_TEMPLATE
+#         from jinja2 import Environment, FileSystemLoader
+#         path = os.path.dirname(os.path.abspath(__file__))
+#         dict_fields = {f.name: getattr(instance, f.name) for f in instance._meta.get_fields() if f.name != 'id'}
+#         path_dir_template = "templates/app_air"
+#         env = Environment(
+#             autoescape=False,
+#             loader=FileSystemLoader(os.path.join(path, path_dir_template)),
+#             trim_blocks=False)
+#         # name_file = instance.page_title
+#         directory = os.path.join(path)
+#         os.makedirs(directory, exist_ok=True)
+#         template = env.get_template(name_template)
+#         output_from_parsed_template = template.render(**dict_data_template)
+#         # to save the results
+#         print(f"{directory}")
+#         path_templates = f"{directory}/templates/app_air/{name_city}.html"
+#         with open(path_templates, "w") as fh:
+#             fh.write(output_from_parsed_template)
+#         with open(f"{directory}/templates/app_air/includes/{name_city}.html", "w") as fh:
+#             fh.write(output_from_parsed_template)
+#
+#         with open(path_templates, 'r+') as f:
+#             lines = f.readlines()
+#             f.seek(0)
+#             f.write('{% load static %}\n')
+#             f.write(''.join(lines))
+#         parse_file_compile(path_templates)
+#         replace_static_urls_in_html_file(path_templates)
