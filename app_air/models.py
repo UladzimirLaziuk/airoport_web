@@ -39,12 +39,16 @@ class HeroSection(models.Model):
 
     def __str__(self):
         return f"HeroHeadline - {self.city_model.name_city}"
+
+
 class HeroSubHeadline(models.Model):
     section_hero = models.ForeignKey(HeroSection, on_delete=models.CASCADE, related_name='section_hero_subheading')
     description = models.TextField()
 
     def __str__(self):
         return f"HeroSubHeadline - {self.section_hero.city_model.name_city}"
+
+
 '''
 Section: Body
 
@@ -70,16 +74,21 @@ class BodySubSection(models.Model):
     title = models.CharField(max_length=255, verbose_name='subsection body title')
 
     def __str__(self):
-        return f"BodySubSection - {self.section_body.city_model.name_city}"
+        return f"{self.title} - {self.section_body.city_model.name_city}"
 
 
 class BodySubSectionDescription(models.Model):
     text = models.TextField()
     subsection_body = models.ForeignKey(BodySubSection, on_delete=models.CASCADE,
                                         related_name='paragraphs')
+    count_paragraphs = models.IntegerField(null=True, default=1)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.count_paragraphs += self.subsection_body.paragraphs.count()
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
-        return f"BodySubSectionDescription - {self.subsection_body.section_body.city_model.name_city}"
+        return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
 
 
 """
@@ -123,9 +132,16 @@ class AudienceSubSectionDescription(models.Model):
     text = models.TextField()
     audience_subsection_model = models.ForeignKey(AudienceSubSection, on_delete=models.CASCADE,
                                                   related_name='paragraphs')
+    count_paragraphs = models.IntegerField(null=True, default=1)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.count_paragraphs += self.audience_subsection_model.paragraphs.count()
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
-        return f"AudienceSubSectionDescription - {self.audience_subsection_model.audience_body.section_body.name_city}"
+        return f"AudienceSubSectionDescription -" \
+               f" {self.audience_subsection_model.audience_body.section_body.name_city}" \
+               f"-{self.count_paragraphs}"
 
 
 """
@@ -190,8 +206,16 @@ class CampaignTypesSubSectionDescription(models.Model):
     subsection_model = models.ForeignKey(CampaignTypesSubSection, on_delete=models.CASCADE,
                                          related_name='subsection_campaign_types_description')
 
+    count_paragraphs = models.IntegerField(null=True, default=1)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.count_paragraphs += self.subsection_model.subsection_campaign_types_description.count()
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
     def __str__(self):
-        return f"CampaignTypesSubSectionDescription - {self.subsection_model.subsection_body.model_city.name_city}"
+        return f"CampaignTypesSubSectionDescription -" \
+               f" {self.subsection_model.subsection_body.model_city.name_city}" \
+               f"-{self.count_paragraphs}"
 
 
 """
@@ -215,9 +239,14 @@ class MediaSolutionsTabSection(models.Model):
     model_section = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE,
                                       related_name='media_solutions_tab')
     image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.count_paragraphs += self.model_section.media_solutions_tab.count()
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
-        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}"
+        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
 
 
 ################################################################################################################
