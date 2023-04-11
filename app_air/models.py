@@ -83,9 +83,9 @@ class BodySubSectionDescription(models.Model):
                                         related_name='paragraphs')
     count_paragraphs = models.IntegerField(null=True, default=1)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.count_paragraphs += self.subsection_body.paragraphs.count()
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     self.count_paragraphs += self.subsection_body.paragraphs.count()
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
@@ -134,9 +134,9 @@ class AudienceSubSectionDescription(models.Model):
                                                   related_name='paragraphs')
     count_paragraphs = models.IntegerField(null=True, default=1)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.count_paragraphs += self.audience_subsection_model.paragraphs.count()
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     self.count_paragraphs += self.audience_subsection_model.paragraphs.count()
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"AudienceSubSectionDescription -" \
@@ -208,9 +208,9 @@ class CampaignTypesSubSectionDescription(models.Model):
 
     count_paragraphs = models.IntegerField(null=True, default=1)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.count_paragraphs += self.subsection_model.subsection_campaign_types_description.count()
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     self.count_paragraphs += self.subsection_model.subsection_campaign_types_description.count()
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"CampaignTypesSubSectionDescription -" \
@@ -241,9 +241,9 @@ class MediaSolutionsTabSection(models.Model):
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.count_paragraphs += self.model_section.media_solutions_tab.count()
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     self.count_paragraphs += self.model_section.media_solutions_tab.count()
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
