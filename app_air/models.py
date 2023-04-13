@@ -370,11 +370,14 @@ def get_dict(id_):
         dict_data_template['audiencesection_title'] = audiencesection.title
 
         dict_data_template['list_accordions'] = audiencesection.accordions.all()
-    model_campaign_types = CampaignTypesSection.objects.filter(model_city=id_).first()
+    # model_campaign_types = CampaignTypesSection.objects.filter(model_city=id_).first()
+    camp = CampaignTypesSection.objects.filter(model_city=id_)
+    if camp.exists():
+        model_campaign_types = camp.first()
 
-    list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title', flat=True)
-    dict_data_template['list_title_campaign_types'] = list_title_campaign_types
-    dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
+        list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title', flat=True)
+        dict_data_template['list_title_campaign_types'] = list_title_campaign_types
+        dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
     return dict_data_template
 
 
