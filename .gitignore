@@ -4,5 +4,6 @@ venv/
 *.json
 db.sqlite3
 
-app_air/__pycache__/
+app_air/__pycache__/*
 airoport/__pycache__/
+airoport/__pycache__/*

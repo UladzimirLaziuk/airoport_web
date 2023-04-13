@@ -2,12 +2,13 @@ import re
 
 from django.contrib import admin, messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import City,  HeroSection, HeroSubHeadline, BodySection, \
+from .models import City, HeroSection, HeroSubHeadline, BodySection, \
     BodySubSection, BodySubSectionDescription, AudienceSection, AudienceSubSection, AudienceSubSectionDescription, \
     CampaignTypesSubSection, CampaignTypesSubSectionDescription, MediaSolutionsSection, \
     MediaSolutionsTabSection, CampaignTypesSection
@@ -91,10 +92,42 @@ class NoDeleteInline(BaseInlineFormSet):
 #         print("MyInlineModel with id {} has been created".format(instance.id))
 #     else:
 #         print("MyInlineModel with id {} has been updated".format(instance.id))
+from django.forms import FileInput, TextInput
+
+
+class StaticFileInput(FileInput):
+    def __init__(self, attrs=None):
+        default_attrs = {'accept': '.jpg, .png, .webp, '}
+        if attrs:
+            default_attrs.update(attrs)
+        default_attrs.update({'directory': '/static/'})
+        super().__init__(default_attrs)
+
+
+# InMemoryUploadedFile
+
+class MyForm(forms.ModelForm):
+    file_name = forms.FileField(widget=StaticFileInput())
+
+    class Meta:
+        model = City
+        fields = '__all__'
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if 'file' in self.files:
+            instance.file_name = self.files['file_name'].name
+        if commit:
+            instance.save()
+        return instance
+
+
+class HeroAdmin(admin.ModelAdmin):
+    form = MyForm
 
 
 admin.site.register(City)
-admin.site.register(HeroSection)
+admin.site.register(HeroSection, HeroAdmin)
 admin.site.register(HeroSubHeadline)
 admin.site.register(BodySection)
 admin.site.register(BodySubSection)

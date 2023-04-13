@@ -7,9 +7,11 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from airoport import settings
-from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, replace_static_urls_in_html_file
+from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, replace_static_urls_in_html_file, \
+    copy_and_full_rename
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.template import loader
 
 ###########################################################################################################
 """Section Title: Hero
@@ -25,8 +27,9 @@ class City(models.Model):
     code_city = models.CharField(max_length=255, verbose_name='code_city')
     page_title = models.CharField(max_length=255, verbose_name='Page Title')
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f'{self.name_city}'
@@ -36,6 +39,16 @@ class HeroSection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero')
     hero_image_name = models.CharField(max_length=255, verbose_name='hero image name')
     title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if '{}' in self.hero_image_name:
+            template_name = self.hero_image_name.format(self.city_model.name_city.lower(),
+                                                        self.city_model.code_city.lower())
+        else:
+            template_name = self.hero_image_name
+        copy_and_full_rename(self.file_name, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"HeroHeadline - {self.city_model.name_city}"
@@ -64,6 +77,17 @@ class BodySection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_body')
     body_image_name = models.CharField(max_length=255, verbose_name='main body image name')
     section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        name_image = self.body_image_name
+        if '{}' in name_image:
+            template_name = name_image.format(self.city_model.name_city.lower(),
+                                              self.city_model.code_city.lower())
+        else:
+            template_name = name_image
+        copy_and_full_rename(settings.NAME_IMAGE_BODY, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"BodySection - {self.city_model.name_city}"
@@ -83,9 +107,6 @@ class BodySubSectionDescription(models.Model):
                                         related_name='paragraphs')
     count_paragraphs = models.IntegerField(null=True, default=1)
 
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     self.count_paragraphs += self.subsection_body.paragraphs.count()
-    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
@@ -123,6 +144,17 @@ class AudienceSubSection(models.Model):
     image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
     audience_body = models.ForeignKey(AudienceSection, on_delete=models.CASCADE,
                                       related_name='accordions')
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        name_image = self.image_name
+        if '{}' in name_image:
+            template_name = name_image.format(self.audience_body.section_body.name_city.lower(),
+                                              self.audience_body.section_body.code_city.lower())
+        else:
+            template_name = name_image
+        copy_and_full_rename(settings.NAME_IMAGE_AUDIENCE_SUBSECTION, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     def __str__(self):
         return f"AudienceSubSection - {self.audience_body.section_body.name_city}-" \
@@ -197,6 +229,7 @@ class CampaignTypesSubSection(models.Model):
                                         related_name='subsection_campaign_types')
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
     image_name = models.CharField(max_length=255)
+    file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}-" \
@@ -216,9 +249,9 @@ class CampaignTypesSubSectionDescription(models.Model):
 
     def __str__(self):
         return f"CampaignTypesSubSectionDescription -" \
-               f" {self.subsection_model.subsection_body.model_city.name_city}"  \
-            f"-{'-'.join(self.subsection_model.image_name.split('_')[-2:])}" \
-            f"-{self.count_paragraphs}"
+               f" {self.subsection_model.subsection_body.model_city.name_city}" \
+               f"-{'-'.join(self.subsection_model.image_name.split('_')[-2:])}" \
+               f"-{self.count_paragraphs}"
 
 
 """
@@ -243,6 +276,7 @@ class MediaSolutionsTabSection(models.Model):
                                       related_name='media_solutions_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     self.count_paragraphs += self.model_section.media_solutions_tab.count()
@@ -268,20 +302,32 @@ def get_dict(id_):
     # dict_data_template['object_about_city'] = tabs[2]
 
     dict_data_template['obj_why_city_airport'] = BodySection.objects.first()
+
+    # AudienceSection
+    audiencesection = AudienceSection.objects.filter(section_body=id_).first()
+    dict_data_template['audiencesection_title'] = audiencesection.title
+
+    model_campaign_types = CampaignTypesSection.objects.filter(model_city=id_).first()
+
+    list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title', flat=True)
+    dict_data_template['list_title_campaign_types'] = list_title_campaign_types
+    dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
     return dict_data_template
 
 
-from django.template import loader
-# @receiver(post_save)
-# def get_create_html(sender, instance, created, **kwargs):
-#         list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection')
-#         if sender.__name__ in list_of_models:
-#             context = get_dict(id_=1)
-#             content = loader.render_to_string('app_air/index.html', context,
-#                                               request=None, using=None)
-#             with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
-#                 fh.write(content)
 
+
+
+@receiver(post_save)
+def get_create_html(sender, instance, created, **kwargs):
+    list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection', 'CampaignTypesSubSectionDescription',
+                      'CampaignTypesSubSection', 'CampaignTypesSection')
+    if sender.__name__ in list_of_models:
+        context = get_dict(id_=1)
+        content = loader.render_to_string('app_air/index.html', context,
+                                          request=None, using=None)
+        with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
+            fh.write(content)
 
 # city_model = City.objects.first()
 # name_city = city_model.name_city
