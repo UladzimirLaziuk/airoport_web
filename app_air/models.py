@@ -342,7 +342,7 @@ class MediaSolutionsTabSection(models.Model):
 ################################################################################################################
 def get_dict(id_):
     dict_data_template = dict()
-    obj_city = City.objects.filter(pk=id_).first()
+    obj_city = City.objects.first()#TODO
 
     dict_data_template['name_city'] = obj_city.name_city
     dict_data_template['object_city'] = obj_city
@@ -393,8 +393,8 @@ def get_create_html(sender, instance, created, **kwargs):
         path_templates = f"{directory}/templates/app_air/{instance.get_name_city}.html"
         content = loader.render_to_string('app_air/index.html', context,
                                           request=None, using=None)
-        with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
-            fh.write(content)
+        # with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
+        #     fh.write(content)
         with open(path_templates, "w") as fh:
             fh.write(content)
             print(instance.get_name_city)
