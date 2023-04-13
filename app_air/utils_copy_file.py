@@ -51,14 +51,17 @@ def copy_and_rename_file(filename, arg, path_static='static/img/home/'):
 
 def copy_and_full_rename(filename, arg, path_static='static/img/home/'):
     basename = os.path.basename(filename)
-    name, extension = os.path.splitext(basename)
-    for extension in ['.webp', '.jpg']:
+    name, file_extension = os.path.splitext(basename)
+
+    list_extensions = ['.webp', file_extension]
+
+    for extension in list_extensions:
+
         new_basename = f"{arg}{extension}"
         src = os.path.join(path_static, basename)
         dst = os.path.join(path_static, new_basename)
         if not os.path.exists(dst):
             shutil.copy(src, dst)
-
 
 
 def open_read_file(path_file):

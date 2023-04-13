@@ -122,14 +122,35 @@ class MyForm(forms.ModelForm):
         return instance
 
 
+class MyFormBody(MyForm):
+    class Meta:
+        model = BodySection
+        fields = '__all__'
+
+
+class MyFormAudienceSubSection(forms.ModelForm):
+    file_name = forms.FileField(widget=StaticFileInput())
+    class Meta:
+        model = AudienceSubSection
+        fields = '__all__'
+
+
+class AudienceSubSectionAdmin(admin.ModelAdmin):
+    form = MyFormAudienceSubSection
+
+
 class HeroAdmin(admin.ModelAdmin):
     form = MyForm
+
+
+class BodyAdmin(admin.ModelAdmin):
+    form = MyFormBody
 
 
 admin.site.register(City)
 admin.site.register(HeroSection, HeroAdmin)
 admin.site.register(HeroSubHeadline)
-admin.site.register(BodySection)
+admin.site.register(BodySection, BodyAdmin)
 admin.site.register(BodySubSection)
 admin.site.register(BodySubSectionDescription)
 admin.site.register(AudienceSection)

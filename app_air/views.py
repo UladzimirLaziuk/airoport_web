@@ -15,9 +15,6 @@ from app_air.serializers import CitySerializer, HeroHeroSectionSerializer, BodyS
 from django.template import loader
 # Create your views here.
 def home(request):
-    content = loader.render_to_string('app_air/index1.html', {'object_city': City.objects.first()}, request=None, using=None)
-    with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
-        fh.write(content)
     return render(request, 'app_air/index1.html', {'object_city': City.objects.first()})
 
 
