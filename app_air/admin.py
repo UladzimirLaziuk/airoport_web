@@ -18,6 +18,9 @@ from django.forms import CheckboxSelectMultiple, TextInput, BaseInlineFormSet
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.admin import site, AdminSite, ModelAdmin, TabularInline, StackedInline
 from django.db import models
+from django import forms
+import os
+from django.conf import settings
 
 
 # class HeroModelInline(admin.StackedInline):
@@ -130,6 +133,7 @@ class MyFormBody(MyForm):
 
 class MyFormAudienceSubSection(forms.ModelForm):
     file_name = forms.FileField(widget=StaticFileInput())
+
     class Meta:
         model = AudienceSubSection
         fields = '__all__'
@@ -147,18 +151,87 @@ class BodyAdmin(admin.ModelAdmin):
     form = MyFormBody
 
 
+class FileSelectWidget(forms.Select):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        files_path = os.path.join(settings.BASE_DIR, 'static', 'dir_basis_images')
+        self.choices = [(f, f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path, f))]
+
+
+# Определяем новую форму
+class HeroForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = HeroSection
+        fields = '__all__'
+
+
+# Определяем модель
+class HeroModelAdmin(admin.ModelAdmin):
+    form = HeroForm
+
+
+class BodySectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = HeroSection
+        fields = '__all__'
+
+
+class BodySectionModelAdmin(admin.ModelAdmin):
+    form = BodySectionForm
+
+
+class AudienceSubSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = AudienceSubSection
+        fields = '__all__'
+
+
+class AudienceSubSectionModelAdmin(admin.ModelAdmin):
+    form = AudienceSubSectionForm
+
+
+class CampaignTypesSubSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = CampaignTypesSubSection
+        fields = '__all__'
+
+
+class CampaignTypesSubSectionModelAdmin(admin.ModelAdmin):
+    form = CampaignTypesSubSectionForm
+
+
+class MediaSolutionsTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = MediaSolutionsTabSection
+        fields = '__all__'
+
+
+class MediaSolutionsTabSectionModelAdmin(admin.ModelAdmin):
+    form = MediaSolutionsTabSectionForm
+
+
 admin.site.register(City)
-admin.site.register(HeroSection, HeroAdmin)
+admin.site.register(HeroSection, HeroModelAdmin)
 admin.site.register(HeroSubHeadline)
-admin.site.register(BodySection, BodyAdmin)
+admin.site.register(BodySection, BodySectionModelAdmin)
 admin.site.register(BodySubSection)
 admin.site.register(BodySubSectionDescription)
 admin.site.register(AudienceSection)
-admin.site.register(AudienceSubSection)
+admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
 admin.site.register(AudienceSubSectionDescription)
 admin.site.register(CampaignTypesSection)
 # admin.site.register(CampaignTypesHeroSection)
-admin.site.register(CampaignTypesSubSection)
+admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
 admin.site.register(CampaignTypesSubSectionDescription)
 admin.site.register(MediaSolutionsSection)
-admin.site.register(MediaSolutionsTabSection)
+admin.site.register(MediaSolutionsTabSection, MediaSolutionsTabSectionModelAdmin)

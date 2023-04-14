@@ -226,8 +226,8 @@
                                 {% for items in  body_subsection_object %}
                                     <li data-tab-target="why-{{ items.title }}_{{ forloop.counter }}-airport">{{ items.title }}</li>
                                 {%  endfor %}
-                              <li data-tab-target="about-airport-{{ name_city }}">{{ object_about_city_airport.title }}</li>
-                              <li data-tab-target="city-of-{{ name_city }}">{{ object_about_city.title }}</li>
+{#                              <li data-tab-target="about-airport-{{ name_city }}">{{ object_about_city_airport.title }}</li>#}
+{#                              <li data-tab-target="city-of-{{ name_city }}">{{ object_about_city.title }}</li>#}
                             </ul>
                           </div>
                         </div>
@@ -296,7 +296,7 @@
                     {%  for accordion in list_accordions %}
                     <div class="accordion__item">
                       <!-- Title, trigger-->
-                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/{{ accordion.image_name }}.jpg" alt="{{ accordion.title}}"></span><span class="accordion__title-text">Business Decision Makers</span></div>
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/{{ accordion.image_name }}.jpg" alt="{{ accordion.title}}"></span><span class="accordion__title-text">{{ accordion.title}}</span></div>
                       <!-- Body-->
                       <div class="accordion__body">
                         <!-- Content-->
@@ -322,7 +322,7 @@
                 <!-- Cases-->
                 <div class="dashboard__tab" id="cases">
                   <!-- Section title-->
-                  <h4 class="title-section title-sm">{{ audiencesection_title }}</h4>
+                  <h4 class="title-section title-sm">{{ audience_section_title }}</h4>
                   <div class="categories">
                     <div class="items-img-v">
                       <div class="items-img-v__item">
@@ -1054,128 +1054,19 @@
                   <div class="categories">
                     <div class="items-img-v">
 
-                        {% for title in list_title_campaign_types %}
+                        {% for obj in objects_subsection_campaign_types %}
                       <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="{{ title }}-{{ forloop.counter }}">
+                        <div class="item-img-v" data-tab-target="{{ obj.title }}">
                           <div class="item-img-v__img">
                             <picture>
-                              <source srcset="img/home/articles/advertisers/business_to_business_a1.webp" type="image/webp"><img alt="{{ title }}" src="img/home/articles/advertisers/business_to_business_a1.jpg">
+                              <source srcset="img/home/{{ obj.image_name}}.webp" type="image/webp"><img alt="{{ title }}" src="img/home/articles/advertisers/{{ obj.image_name}}.jpg">
                             </picture>
                           </div>
-                          <div class="item-img-v__title">{{ title }}</div>
+                          <div class="item-img-v__title">{{ obj.title }}</div>
                         </div>
                       </div>
                         {% endfor %}
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="conference-participants">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/conference_participants_a1.webp" type="image/webp"><img alt="Conference Participants" src="img/home/articles/advertisers/conference_participants_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Conference Participants</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="b2c">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/business_to_consumers.webp" type="image/webp"><img alt="B2C" src="img/home/articles/advertisers/business_to_consumers.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">B2C</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="education">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/universities_a1.webp" type="image/webp"><img alt="Education" src="img/home/articles/advertisers/universities_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Education</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="tourism">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/tourism_a1.webp" type="image/webp"><img alt="Tourism" src="img/home/articles/advertisers/tourism_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Tourism</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="government">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/government_organizations_a1.webp" type="image/webp"><img alt="Government" src="img/home/articles/advertisers/government_organizations_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Government</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="luxury">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/luxury_brand_a1.webp" type="image/webp"><img alt="Luxury" src="img/home/articles/advertisers/luxury_brand_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Luxury</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="events">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/sporting_events_a1.webp" type="image/webp"><img alt="Events" src="img/home/articles/advertisers/sporting_events_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Events</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="entertainment">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/entertainment_a1.webp" type="image/webp"><img alt="Entertainment" src="img/home/articles/advertisers/entertainment_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Entertainment</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="financial-and-crypto">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/financial_services_a1.webp" type="image/webp"><img alt="Financial and Crypto" src="img/home/articles/advertisers/financial_services_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Financial and Crypto</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="psa-non-profits">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/nonprofit_psa_a1.webp" type="image/webp"><img alt="PSA &amp; Non-Profits" src="img/home/articles/advertisers/nonprofit_psa_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">PSA &amp; Non-Profits</div>
-                        </div>
-                      </div>
-                      <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="healthcare">
-                          <div class="item-img-v__img">
-                            <picture>
-                              <source srcset="img/home/articles/advertisers/healthcare_a1.webp" type="image/webp"><img alt="Healthcare" src="img/home/articles/advertisers/healthcare_a1.jpg">
-                            </picture>
-                          </div>
-                          <div class="item-img-v__title">Healthcare</div>
-                        </div>
-                      </div>
+
                     </div>
                     <!-- Tabs-->
                     <div class="tabs hidden">
@@ -1186,270 +1077,36 @@
                           <ul class="list-tabs-boxed">
 
                               {% for title in list_title_campaign_types %}
-                            <li data-tab-target="{{ title }}-{{ forloop.counter }}">{{ title }}</li>
+                            <li data-tab-target="{{ title }}">{{ title }}</li>
                               {% endfor %}
-                            <li data-tab-target="conference-participants">Conference Participants</li>
-                            <li data-tab-target="b2c">B2C</li>
-                            <li data-tab-target="education">Education</li>
-                            <li data-tab-target="tourism">Tourism</li>
-                            <li data-tab-target="government">Government</li>
-                            <li data-tab-target="luxury">Luxury</li>
-                            <li data-tab-target="events">Events</li>
-                            <li data-tab-target="entertainment">Entertainment</li>
-                            <li data-tab-target="financial-and-crypto">Financial and Crypto</li>
-                            <li data-tab-target="psa-non-profits">PSA &amp; Non-Profits</li>
-                            <li data-tab-target="healthcare">Healthcare</li>
+
                           </ul>
                         </div>
                       </div>
                       <!-- Content, bottom part-->
                       <div class="tabs__content">
                           {% for obj in objects_subsection_campaign_types %}
-                        <div class="tabs__content__item" id="{{ obj.title }}-{{ forloop.counter }}">
+                        <div class="tabs__content__item" id="{{ obj.title }}">
                           <div class="dashboard__article">
                             <!-- Image-->
                             <div class="dashboard__img">
                               <picture>
-                                <source srcset="img/home/articles/advertisers/business_to_business_a1.webp" type="image/webp"><img alt="B2B" src="img/home/articles/advertisers/business_to_business_a1.jpg">
+                                <source srcset="img/home/{{ obj.image_name }}.webp" type="image/webp"><img alt="{{ obj.title }}" src="img/home/{{ obj.image_name }}.jpg">
                               </picture>
                             </div>
                             <!-- Content-->
                             <div class="dashboard__content">
                               <div class="content">
-                                <h4 class="title-md">Captivating Key Business Decision-Makers At Airports</h4>
+                                <h4 class="title-md">{{ obj.title }}</h4>
                                   {% for obj_description in obj.subsection_campaign_types_description.all %}
-                                <p>{{ obj_description.text }}</p>
+                                <p>{{ obj_description.description }}</p>
                                 {% endfor %}
                               </div>
                             </div>
                           </div>
                         </div>
                           {% endfor %}
-                        <div class="tabs__content__item" id="conference-participants">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/conference_participants_a1.webp" type="image/webp"><img alt="Conference Participants" src="img/home/articles/advertisers/conference_participants_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Arrivals Meet Advertising: Captivate Conference-Goers At The Airport!</h4>
-                                <p>As conference attendees arrive at the host city's airport, there lies a prime opportunity for your brand to make a powerful first impression on this influential audience. Airport advertising enables you to effectively connect with these business travelers as they navigate the airport, eager to attend the event.</p>
-                                <p>To capture the attention of conference-bound travelers, craft tailored advertising campaigns that resonate with their specific needs and interests. By strategically placing your ads within the airport, you can create memorable and engaging experiences for these newly arrived visitors, setting the stage for meaningful connections.</p>
-                                <p>Leverage airport advertising to elevate your brand visibility and establish your company as a key player in the industry among conference attendees. This targeted approach will not only enhance brand recognition and loyalty but also drive sales and revenue growth in the long run.</p>
-                                <p>Maximize your brand's reach by engaging with business travelers as they arrive in the host city for conferences and conventions – make a lasting impact through strategic airport advertising that drives your brand's success.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="b2c">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/business_to_consumers.webp" type="image/webp"><img alt="B2C" src="img/home/articles/advertisers/business_to_consumers.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">High-Flying Impressions: Capturing Consumers With Airport Advertising</h4>
-                                <p>Airport advertising provides a powerful opportunity for your brand to make a lasting impression on consumers, whether they're traveling for leisure or business. Given the extended dwell times and heightened attentiveness at airports, it's the perfect platform to connect with your target audience and foster positive brand associations.</p>
-                                <p>Studies by Nielsen reveal that 68% of U.S. travelers associate airport advertising with high-quality brands and services, while 76% take action after seeing airport ads. This underscores the considerable impact airport advertising can have on consumer behavior.</p>
-                                <p>To effectively engage with consumers traveling for both leisure and business, utilize a variety of innovative strategies, such as experiential activations, dynamic digital messaging, interactive displays, and targeted branding at crucial touchpoints. These tactics will not only help your brand differentiate itself in a competitive marketplace but also create memorable experiences for consumers.</p>
-                                <p>In conclusion, airport advertising enables your brand to establish a connection with a diverse and valuable consumer audience, enhance brand perception, and boost recognition and sales. Capitalize on the opportunity to captivate your target audience and leave a lasting impression with engaging airport advertising campaigns.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="education">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/universities_a1.webp" type="image/webp"><img alt="Education" src="img/home/articles/advertisers/universities_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Boost Enrollment With Airport Advertising</h4>
-                                <p>For universities looking to promote their enrollment programs and reach a wider audience of prospective MBA, postgraduate, or specialized program students, airport advertising offers an unparalleled platform. Given the significance of selecting the right school, it's essential to showcase your programs in a prestigious environment, and airports deliver just that.</p>
-                                <p>Airport advertising allows universities to present their programs as authoritative in their respective fields, from business schools to specialized institutions. Additionally, with alumni donations playing a significant role in supporting universities, targeting business and leisure travelers creates an opportunity to connect with alumni who frequent airports.</p>
-                                <p>Nationwide, universities are promoting their executive, MBA, and specialized programs to busy professionals eager to advance their careers. By leveraging airport advertising, your university can capture the attention of a diverse audience of potential students and foster a positive perception of your programs. This leads to increased enrollment and ongoing support.</p>
-                                <p>In conclusion, airport advertising is the key to successfully marketing your university's enrollment programs to a vast audience of travelers. Utilize this high-impact platform to create a positive perception of your programs, drive enrollment, and connect with influential alumni.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="tourism">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/tourism_a1.webp" type="image/webp"><img alt="Tourism" src="img/home/articles/advertisers/tourism_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Tourism Takeoff: Elevate Your Brand With Airport Advertising</h4>
-                                <p>Advertising in airports has become an essential strategy for forward-thinking businesses like hotels, tour operators, airlines, tourist attractions, and travel insurance companies to captivate and engage with their target audience – the travel enthusiasts.</p>
-                                <p>Airports provide the perfect environment to connect with travelers who are actively seeking new experiences and destinations. With a captive audience immersed in the travel mindset, your brand can seize this opportune moment to create a lasting impression and spark interest in future travel.</p>
-                                <p>By leveraging innovative approaches such as immersive experiential activations, eye-catching digital messaging, interactive displays, and strategic branding at high-impact touchpoints, your business can effectively captivate and target travelers during their journey, when they're most receptive to new ideas.</p>
-                                <p>These targeted efforts not only create unforgettable experiences for travelers but also elevate brand recognition and drive conversions. The airport's bustling foot traffic offers an unrivaled platform for businesses like yours to reach a vast number of potential customers, all eager to explore new travel opportunities.</p>
-                                <p>Don't miss the chance to make your mark in the world of travel. Embrace airport advertising and watch your brand soar to new heights as you connect with the passionate travelers who will shape the future of the industry.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="government">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/government_organizations_a1.webp" type="image/webp"><img alt="Government" src="img/home/articles/advertisers/government_organizations_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Airport Advertising For Government Success</h4>
-                                <p>Government entities and organizations recognize the power of airport advertising to engage and connect with a diverse audience of leisure and business travelers. From recruitment drives for law enforcement and military to public health campaigns, airports provide a high-visibility platform for reaching the masses.</p>
-                                <p>Airports offer a unique environment for government agencies to interact with travelers of various backgrounds, making it an ideal setting to convey essential messages and attract potential candidates. With a prestigious backdrop and a captive audience, your organization can create a strong impact on those who matter most.</p>
-                                <p>Utilizing strategies such as dynamic digital messaging, interactive displays, and strategically placed ads, your government organization can launch engaging and influential campaigns that raise awareness, drive engagement, and reinforce the significance of your mission.</p>
-                                <p>Airport advertising allows government agencies and organizations to effectively connect with travelers, transforming the airport into a vital hub for public information and interaction. Don't miss the chance to elevate your organization's presence and influence among the traveling public. Embrace airport advertising and watch your message soar.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="luxury">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/luxury_brand_a1.webp" type="image/webp"><img alt="Luxury" src="img/home/articles/advertisers/luxury_brand_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">First-Class Exposure: Luxury Brands Soar In Airport Advertising</h4>
-                                <p>Luxury consumer brands discover immense value in airport advertising, capitalizing on the unique opportunities it presents to reach affluent leisure and business travelers. Airports offer an unparalleled environment for high-impact marketing campaigns, attracting a captive audience in a prestigious setting that exudes elegance and exclusivity.</p>
-                                <p>With travel on the rise, the demand for luxury retail and brand advertising in airports has skyrocketed, welcoming an array of high-end clothing brands, automotive manufacturers, jewelry, luggage, fragrances, and more to showcase their finest offerings in this global marketplace.</p>
-                                <p>The esteem associated with airport advertising serves as a driving force for luxury brands, allowing them to align their image with the airport's sophisticated atmosphere. This strategic placement bolsters brand reputation and entices discerning consumers with a taste for the finer things in life.</p>
-                                <p>Moreover, the extended dwell times in airports, particularly in the U.S., present an invaluable opportunity for luxury brands to engage their target audience. As passengers spend a significant amount of time awaiting their flights, luxury brands can seize the moment to showcase their products, leaving a lasting impression on the most sought-after consumer demographic.</p>
-                                <p>Embrace the allure of airport advertising and watch your luxury brand ascend to new heights, captivating the affluent travelers that define your market.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="events">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/sporting_events_a1.webp" type="image/webp"><img alt="Events" src="img/home/articles/advertisers/sporting_events_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Scoring Big With Airport Advertising For Sporting Events</h4>
-                                <p>High-profile sporting events such as the FIFA World Cup, Olympics, Super Bowl, Formula-1, Nascar, and college bowl games draw massive crowds of passionate fans, presenting a golden opportunity for advertisers to tap into this highly engaged audience through airport advertising. Fans traveling to these prestigious events are eager to celebrate, making them an ideal target for brands looking to make a lasting impression.</p>
-                                <p>The attendees of these major sporting events are often affluent, boasting high household incomes and discretionary spending power. By advertising in airports, your brand can effectively connect with these enthusiastic consumers as they embark on their unforgettable journeys.</p>
-                                <p>Airport advertising during key sporting events allows your brand to reach a captivated and receptive audience in a spending mindset. The excitement surrounding these events amplifies the impact of your ads, increasing brand visibility, fostering loyalty, and strengthening your association with the sporting world's most iconic moments.</p>
-                                <p>Don't miss the chance to score big with airport advertising. Seize the opportunity to connect with devoted fans and elevate your brand as they travel to cheer on their favorite teams and athletes.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="entertainment">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/entertainment_a1.webp" type="image/webp"><img alt="Entertainment" src="img/home/articles/advertisers/entertainment_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Takeoff To Stardom: Airport Advertising</h4>
-                                <p>Theme parks, streaming services, movie studios, music record companies, concert companies, and live show producers all recognize the power of airport advertising to captivate a diverse audience of leisure and business travelers. Airports are bustling hubs that draw visitors from around the globe, making them the perfect stage for promoting entertainment products and services to key demographics.</p>
-                                <p>The modern traveler seeks engaging and immersive experiences, and airport advertising is uniquely poised to deliver just that. With cutting-edge interactive digital displays, high-definition video screens, and dynamic digital posters, your advertising campaign can create a lasting impression on your target audience, transforming the airport environment into an attention-grabbing showcase for your brand.</p>
-                                <p>Airport advertising offers unmatched flexibility, allowing you to update and tailor your campaign with ease, ensuring your message remains fresh and relevant. This adaptability is crucial in the fast-paced entertainment industry, where content and trends are constantly evolving. By leveraging the latest technology and captivating visuals, your advertisement can stand out from the crowd and create a buzz among travelers.</p>
-                                <p>In addition, airport advertising enables you to reach both leisure and business travelers – a vital distinction as many business travelers also seek entertainment options during their trips. By tapping into this audience, you can increase the visibility of your brand, driving interest and generating revenue.</p>
-                                <p>Don't miss the opportunity to make an unforgettable impression on a captive audience. Airport advertising provides the ideal platform to showcase your entertainment offerings, captivating leisure and business travelers alike and elevating your brand to new heights.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="financial-and-crypto">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/financial_services_a1.webp" type="image/webp"><img alt="Financial and Crypto" src="img/home/articles/advertisers/financial_services_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">High-Flying Finance: Captivate With Airport Ads</h4>
-                                <p>Banks, stock brokers, exchanges, crypto exchanges, crypto coins, and financial service institutions all recognize the incredible potential of airport advertising to captivate a high-value audience of leisure and business travelers. With a diverse demographic that includes well-educated and affluent individuals, airports are an ideal platform to showcase your financial products and services.</p>
-                                <p>Today's modern traveler is often searching for new opportunities and solutions to manage their wealth on-the-go. Airport advertising allows you to directly target these individuals, harnessing the high foot traffic and global reach to deliver your message effectively. Business travelers, tourists, and frequent flyers alike are all potential customers for your financial offerings.</p>
-                                <p>The extended wait times and layovers at airports create a captive audience, ensuring that your advertisement is seen, read, and considered. As travelers navigate the airport environment, they are more likely to engage with your campaign, leading to increased interest and potential conversions. Moreover, the airport setting fosters a sense of security and trust, further enhancing the appeal of your financial products and services.</p>
-                                <p>Airport advertising also showcases your institution's forward-thinking and innovative approach. Sleek and modern designs help capture the attention of travelers, positioning your brand as a leader in the competitive financial landscape. Whether promoting traditional banking services or cutting-edge crypto exchanges, airport advertising ensures your message is conveyed with impact.</p>
-                                <p>Don't miss the opportunity to reach a high-value audience of leisure and business travelers. Airport advertising provides the perfect stage for financial institutions to make a lasting impression, driving interest and engagement in your products and services.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="psa-non-profits">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/nonprofit_psa_a1.webp" type="image/webp"><img alt="PSA &amp; Non-Profits" src="img/home/articles/advertisers/nonprofit_psa_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Uplifting Causes: Airport Ads With A Purpose</h4>
-                                <p>Municipalities and non-profit organizations recognize the immense potential of airport advertising to amplify public service announcements and raise awareness for their causes. With millions of people passing through airports each year, your message can make a significant impact on both leisure and business travelers.</p>
-                                <p>Airports provide a captive audience, ensuring that your announcement reaches travelers as they wait in lines, relax in lounges, or walk to their gates. This creates ample opportunity for your message to be seen and absorbed by a diverse demographic. Furthermore, airports are often regarded as trusted sources of information, making them the perfect platform for public service announcements and non-profit campaigns.</p>
-                                <p>Non-profit organizations can harness the power of airport advertising to educate the public about their mission and the issues they care about. This global stage allows you to engage with travelers from around the world, many of whom may have never encountered your organization's message otherwise. Your campaign can spark conversations, inspire action, and even encourage donations.</p>
-                                <p>By leveraging airport advertising, non-profits can also facilitate giving opportunities through airport-based kiosks or other technologies. This convenient approach allows travelers to donate on-the-spot, further supporting your cause and driving impact.</p>
-                                <p>In summary, airport advertising presents a unique and compelling opportunity for public service announcements, non-profits, and public good campaigns to reach a vast audience of leisure and business travelers. Make your message soar and inspire positive change with the power of airport advertising.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tabs__content__item" id="healthcare">
-                          <div class="dashboard__article">
-                            <!-- Image-->
-                            <div class="dashboard__img">
-                              <picture>
-                                <source srcset="img/home/articles/advertisers/healthcare_a1.webp" type="image/webp"><img alt="Healthcare" src="img/home/articles/advertisers/healthcare_a1.jpg">
-                              </picture>
-                            </div>
-                            <!-- Content-->
-                            <div class="dashboard__content">
-                              <div class="content">
-                                <h4 class="title-md">Healthcare Airport Advertising</h4>
-                                <p>Airport advertising is a powerful strategy for medical groups, hospitals, clinics, health insurance companies, and health technology firms seeking to connect with a diverse audience of leisure and business travelers. As high-traffic hubs, airports offer an unparalleled opportunity to engage with potential customers who may require medical services or health insurance while away from home.</p>
-                                <p>Medical groups can harness airport advertising to boost brand recognition and attract new patients, while hospitals and clinics can promote their specialized services such as emergency care, pediatrics, or women's health. Health insurance companies can use airport advertising to emphasize the importance of coverage and showcase their offerings, while health technology firms can spotlight their innovative solutions like telemedicine or wearable devices.</p>
-                                <p>Airport advertising encompasses various formats, including billboards, digital displays, and interactive kiosks, allowing for targeted messaging to specific demographic groups like families, business travelers, or seniors. By incorporating cutting-edge technology such as augmented reality or virtual reality, your advertising campaign can engage and captivate travelers, creating a lasting impression.</p>
-                                <p>In summary, airport advertising presents a unique and compelling opportunity for hospitals, clinics, health tech apps, healthcare technology, and health services providers to reach a vast audience of leisure and business travelers. Elevate your brand and showcase your offerings with the power of airport advertising.</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -1799,19 +1456,18 @@
                   <!-- Section title-->
                   <h2 class="title-section title-sm">Digital Media Solutions for Airports</h2>
                   <div class="accordion">
-                    {% for accordion in list_accordions %}
                     <div class="accordion__item">
                       <!-- Title, trigger-->
-                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/articles/solutions/digital_spectaculars_a1.webp" alt="Digital Spectaculars"></span><span class="accordion__title-text">Digital Spectaculars</span></div>
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/{{ tab0 }}.webp" alt="Digital Spectaculars"></span><span class="accordion__title-text">Digital Spectaculars</span></div>
                       <!-- Body-->
                       <div class="accordion__body">
-
                         <!-- Content-->
                         <div class="accordion__content">
                           <div class="content">
-                              {% for items in accordion.paragraphs.all  %}
-                            <p>{{ items.text }}</p>
-                                {% endfor %}
+                            <p>Digital spectacular screens offer a powerful advertising tool to capture significant attention in airports.</p>
+                            <p>Strategically located in high-traffic areas, these screens provide maximum visibility and impact for your brand.</p>
+                            <p>With their attention-grabbing size and creative flexibility, digital spectacular screens can captivate the attention of travelers and drive engagement like never before.</p>
+                            <p>Let us create a tailored advertising strategy that leverages these screens for measurable success.</p>
                             <ul class="mg-t-32 dashboard__content-ad-materials">
                               <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
                               <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
@@ -1824,15 +1480,189 @@
                         <!-- Image-->
                         <div class="accordion__img">
                           <picture class="picture picture--second">
-                            <source srcset="img/home/articles/solutions/digital_spectaculars_a1.webp" type="image/webp"><img alt="Digital Spectaculars" src="img/home/articles/solutions/digital_spectaculars_a1.jpg">
+                            <source srcset="img/home/{{ tab0 }}.webp" type="image/webp"><img alt="Digital Spectaculars" src="img/home/{{ tab0 }}.jpg">
                           </picture>
                         </div>
                       </div>
                     </div>
-                      {%  endfor  %}
-
-
-
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/{{ tab1 }}.webp" alt="Digital Large Format"></span><span class="accordion__title-text">Digital Large Format</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>Large format digital screens offer a unique opportunity to make a lasting impression on travelers.</p>
+                            <p>These screens have the wow factor needed to capture your target audience's attention and inspire them to engage with your brand.</p>
+                            <p>Large format digital screens offer creative flexibility to showcase your brand's messaging and art in a way that resonates with your target audience.</p>
+                            <p>Strategically located in high-traffic areas, these screens ensure maximum visibility and engagement for your brand.</p>
+                            <p>Allow us to design a customized advertising strategy that harnesses the potential of these screens, delivering quantifiable results for your brand.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/{{ tab1 }}.webp" type="image/webp"><img alt="Digital Large Format" src="img/home/{{ tab1 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/{{ tab2 }}.webp" alt="Digital Screen Network"></span><span class="accordion__title-text">Digital Screen Network</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>By using digital network screens, you can deliver your message to travelers multiple times throughout their journey.</p>
+                            <p>Strategically placed in high-traffic areas, these screens ensure maximum exposure for your brand.</p>
+                            <p>These screens build frequency and drive engagement, making them an effective advertising option.</p>
+                            <p>Digital network screens provide a unique opportunity to connect with your target audience in a prime moment when they're most receptive to new ideas and experiences.</p>
+                            <p>Creative lead times are 7-10 business days.</p>
+                            <p>Elevate your brand's visibility and connect with travelers in airports using digital network screens.</p>
+                            <p>Let us develop a personalized advertising approach that utilizes these screens for tangible success in promoting your brand.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/{{ tab2 }}.webp" type="image/webp"><img alt="Digital Screen Network" src="img/home/{{ tab2 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/articles/solutions/{{ tab3 }}.webp" alt="Video Walls"></span><span class="accordion__title-text">Video Walls</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>Video walls are strategically positioned in high-traffic areas of the airport, ensuring maximum visibility and engagement for your brand.</p>
+                            <p>These high-impact screens provide maximum visibility for your brand, making a lasting impression on travelers.</p>
+                            <p>With their large size and creative flexibility, video walls offer a unique opportunity to showcase your brand's messaging and art in a way that truly resonates with your target audience.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/{{ tab3 }}.webp" type="image/webp"><img alt="Video Walls" src="img/home/{{ tab3 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/articles/solutions/{{ tab4 }}.webp" alt="Baggage Claim Digital Network"></span><span class="accordion__title-text">Baggage Claim Digital Network</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>Baggage claim digital network screens provide a unique opportunity to connect with travelers at a prime moment.</p>
+                            <p>Strategically placed in high-traffic areas throughout the baggage claim area, these screens ensure maximum exposure for your brand.</p>
+                            <p>By using baggage claim digital network screens, you can deliver your message to travelers multiple times, building frequency and driving engagement.</p>
+                            <p>Whether you're promoting a new product, service, or event, these screens offer a unique opportunity to connect with your target audience in a prime moment when they're most receptive to new ideas and experiences.</p>
+                            <p>Seize the opportunity to enhance your brand's presence and engage with passengers in the baggage claim area.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/{{ tab4 }}.webp" type="image/webp"><img alt="Baggage Claim Digital Network" src="img/home/{{ tab4 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/articles/solutions/{{ tab5 }}.webp" alt="Flight Information Digital Screens"></span><span class="accordion__title-text">Flight Information Digital Screens</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>Flight information screens are some of the most frequently viewed screens in the airport, making them a highly valuable advertising space to capture travelers' attention.</p>
+                            <p>As travelers check their flight times, they often have idle time to browse other content on the screens, providing an opportunity for advertisers to reach them with targeted messaging.</p>
+                            <p>Strategically located in high-traffic areas such as near departure and arrival gates, these screens provide maximum visibility and impact for your brand.</p>
+                            <p>Whether you're promoting a new product, service, or event, these screens offer a powerful way to connect with your target audience and capture their attention.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/{{ tab5 }}.webp" type="image/webp"><img alt="Flight Information Digital Screens" src="img/home/{{ tab5 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion__item">
+                      <!-- Title, trigger-->
+                      <div class="accordion__title title-xs"><span class="accordion__title-image"><img src="img/home/articles/solutions/{{ tab6 }}.webp" alt="Digital Charging Network"></span><span class="accordion__title-text">Digital Charging Network</span></div>
+                      <!-- Body-->
+                      <div class="accordion__body">
+                        <!-- Content-->
+                        <div class="accordion__content">
+                          <div class="content">
+                            <p>Digital charging network screens are a highly effective advertising tool for brand marketers looking to maximize their reach and connect with travelers in airports.</p>
+                            <p>These screens are strategically located in high-traffic areas throughout the airport, ensuring maximum exposure for your brand.</p>
+                            <p>By using digital charging network screens, you can not only deliver your message to travelers but also provide them with a useful service - the ability to charge their devices.</p>
+                            <p>This dual functionality of advertising and providing a service can help to build a positive brand image and increase engagement with your target audience.</p>
+                            <ul class="mg-t-32 dashboard__content-ad-materials">
+                              <li> <strong>Ad spots:</strong> Ranges from 8 to 30 second.*</li>
+                              <li> <strong>Loop duration:</strong> Ranges from 30 to 240 seconds.*</li>
+                              <li> <strong>Capabilities:</strong> Full motion animation and static. Use different rotating ads.</li>
+                              <li> <strong>Lead times:</strong> 7-10 business days.*</li>
+                            </ul>
+                            <p>* Differs depending on the airport.</p>
+                          </div>
+                        </div>
+                        <!-- Image-->
+                        <div class="accordion__img">
+                          <picture class="picture picture--second">
+                            <source srcset="img/home/articles/solutions/{{ tab6 }}.webp" type="image/webp"><img alt="Digital Charging Network" src="img/home/{{ tab6 }}.jpg">
+                          </picture>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="dashboard__tab" id="static-solutions1">

@@ -270,6 +270,16 @@ class CampaignTypesSubSection(models.Model):
     image_name = models.CharField(max_length=255)
     file_name = models.CharField(max_length=50, blank=True)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        name_image = self.image_name
+        if '{}' in name_image:
+            template_name = name_image.format(self.subsection_body.model_city.name_city.lower(),
+                                              self.subsection_body.model_city.code_city.lower())
+        else:
+            template_name = name_image
+        self.image_name = template_name
+        copy_and_full_rename(self.file_name, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
     @property
     def get_name_city(self):
         return self.subsection_body.model_city.name_city
@@ -328,9 +338,16 @@ class MediaSolutionsTabSection(models.Model):
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
 
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     self.count_paragraphs += self.model_section.media_solutions_tab.count()
-    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        name_image = self.image_name
+        if '{}' in name_image:
+            template_name = name_image.format(self.model_section.model_city.name_city.lower(),
+                                              self.model_section.model_city.code_city.lower())
+        else:
+            template_name = name_image
+        self.image_name = template_name
+        copy_and_full_rename(self.file_name, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
     @property
     def get_name_city(self):
         return self.model_section.model_city.name_city
@@ -342,7 +359,7 @@ class MediaSolutionsTabSection(models.Model):
 ################################################################################################################
 def get_dict(id_):
     dict_data_template = dict()
-    obj_city = City.objects.first()#TODO
+    obj_city = City.objects.first()  # TODO
 
     dict_data_template['name_city'] = obj_city.name_city
     dict_data_template['object_city'] = obj_city
@@ -367,7 +384,7 @@ def get_dict(id_):
     audience_section = AudienceSection.objects.filter(section_body=id_)
     if audience_section.exists():
         audiencesection = audience_section.first()
-        dict_data_template['audiencesection_title'] = audiencesection.title
+        dict_data_template['audience_section_title'] = audiencesection.title
 
         dict_data_template['list_accordions'] = audiencesection.accordions.all()
     # model_campaign_types = CampaignTypesSection.objects.filter(model_city=id_).first()
@@ -375,9 +392,17 @@ def get_dict(id_):
     if camp.exists():
         model_campaign_types = camp.first()
 
-        list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title', flat=True)
+        list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title',
+                                                                             flat=True)
         dict_data_template['list_title_campaign_types'] = list_title_campaign_types
         dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
+
+    solutions_models = MediaSolutionsSection.objects.filter(model_city=id_)
+    if solutions_models.exists():
+        dict_data_template['solutions_list'] = solutions_models.first().media_solutions_tab.all()
+        dict_data_template.update(
+            {f'tab{index}': obj.image_name for index, obj in
+             enumerate(solutions_models.first().media_solutions_tab.all())})
     return dict_data_template
 
 
