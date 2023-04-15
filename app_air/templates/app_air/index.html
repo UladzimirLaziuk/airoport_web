@@ -1062,7 +1062,7 @@
                               <source srcset="img/home/{{ obj.image_name}}.webp" type="image/webp"><img alt="{{ title }}" src="img/home/{{ obj.image_name}}.jpg">
                             </picture>
                           </div>
-                          <div class="item-img-v__title">{{ obj.title }}</div>
+                          <div class="item-img-v__title">{{ obj.get_tag_name_html_display }}</div>
                         </div>
                       </div>
                         {% endfor %}
