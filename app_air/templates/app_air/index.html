@@ -1056,10 +1056,10 @@
 
                         {% for obj in objects_subsection_campaign_types %}
                       <div class="items-img-v__item">
-                        <div class="item-img-v" data-tab-target="{{ obj.get_tag_name_html_display }}">
+                        <div class="item-img-v" data-tab-target="{{ obj.tag_name }}">
                           <div class="item-img-v__img">
                             <picture>
-                              <source srcset="img/home/{{ obj.image_name}}.webp" type="image/webp"><img alt="{{ title }}" src="img/home/articles/advertisers/{{ obj.image_name}}.jpg">
+                              <source srcset="img/home/{{ obj.image_name}}.webp" type="image/webp"><img alt="{{ title }}" src="img/home/{{ obj.image_name}}.jpg">
                             </picture>
                           </div>
                           <div class="item-img-v__title">{{ obj.title }}</div>
@@ -1077,7 +1077,7 @@
                           <ul class="list-tabs-boxed">
 
                               {% for obj in objects_subsection_campaign_types %}
-                            <li data-tab-target="{{ obj.get_tag_name_html_display }}">{{ obj.title }}</li>
+                            <li data-tab-target="{{ obj.tag_name }}">{{ obj.get_tag_name_html_display }}</li>
                               {% endfor %}
 
                           </ul>
@@ -1086,7 +1086,7 @@
                       <!-- Content, bottom part-->
                       <div class="tabs__content">
                           {% for obj in objects_subsection_campaign_types %}
-                        <div class="tabs__content__item" id="{{ obj.get_tag_name_html_display }}">
+                        <div class="tabs__content__item" id="{{ obj.tag_name }}">
                           <div class="dashboard__article">
                             <!-- Image-->
                             <div class="dashboard__img">
