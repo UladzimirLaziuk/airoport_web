@@ -11,7 +11,10 @@ from django.utils.html import format_html
 from .models import City, HeroSection, HeroSubHeadline, BodySection, \
     BodySubSection, BodySubSectionDescription, AudienceSection, AudienceSubSection, AudienceSubSectionDescription, \
     CampaignTypesSubSection, CampaignTypesSubSectionDescription, MediaSolutionsSection, \
-    MediaSolutionsTabSection, CampaignTypesSection
+    MediaSolutionsTabSection, CampaignTypesSection, StaticSolutions, StaticSolutionsTabSection, \
+    AirlineClubLoungesSection, AirlineClubLoungesTabSection, SecurityAreaSection, SecurityAreaSectionTabSection, \
+    WiFiSponsorShipsSection, WiFiSponsorShipsSectionTab, ExteriorsSection, ExteriorsTabSection, ExperientialSection, \
+    ExperientialTabSection, InFlightVideoSection, InFlightVideoTabSection
 from django import forms
 from django.contrib.admin import ModelAdmin
 from django.forms import CheckboxSelectMultiple, TextInput, BaseInlineFormSet
@@ -234,4 +237,118 @@ admin.site.register(CampaignTypesSection)
 admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
 admin.site.register(CampaignTypesSubSectionDescription)
 admin.site.register(MediaSolutionsSection)
-admin.site.register(MediaSolutionsTabSection, MediaSolutionsTabSectionModelAdmin)
+admin.site.register(MediaSolutionsTabSection,
+                    MediaSolutionsTabSectionModelAdmin)
+
+admin.site.register(StaticSolutions)
+
+
+class StaticSolutionsTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = StaticSolutionsTabSection
+        fields = '__all__'
+
+
+class StaticSolutionsTabSectionModelAdmin(admin.ModelAdmin):
+    form = MediaSolutionsTabSectionForm
+
+
+admin.site.register(StaticSolutionsTabSection, StaticSolutionsTabSectionModelAdmin)
+admin.site.register(AirlineClubLoungesSection)
+
+
+class AirlineClubLoungesTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = AirlineClubLoungesTabSection
+        fields = '__all__'
+
+
+class AirlineClubLoungesTabSectionModelAdmin(admin.ModelAdmin):
+    form = AirlineClubLoungesTabSectionForm
+
+
+admin.site.register(AirlineClubLoungesTabSection, AirlineClubLoungesTabSectionModelAdmin)
+admin.site.register(SecurityAreaSection)
+
+
+class SecurityAreaSectionTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = SecurityAreaSectionTabSection
+        fields = '__all__'
+
+
+class SecurityAreaSectionTabSectionModelAdmin(admin.ModelAdmin):
+    form = SecurityAreaSectionTabSectionForm
+
+
+admin.site.register(SecurityAreaSectionTabSection, SecurityAreaSectionTabSectionModelAdmin)
+admin.site.register(WiFiSponsorShipsSection)
+
+
+class WiFiSponsorShipsSectionTabForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = WiFiSponsorShipsSectionTab
+        fields = '__all__'
+
+
+class WiFiSponsorShipsSectionTabModelAdmin(admin.ModelAdmin):
+    form = WiFiSponsorShipsSectionTabForm
+
+
+admin.site.register(WiFiSponsorShipsSectionTab, WiFiSponsorShipsSectionTabModelAdmin)
+admin.site.register(ExperientialSection)
+
+
+class ExperientialTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = ExperientialTabSection
+        fields = '__all__'
+
+
+class ExperientialTabSectionModelAdmin(admin.ModelAdmin):
+    form = ExperientialTabSectionForm
+
+
+admin.site.register(ExperientialTabSection, ExperientialTabSectionModelAdmin)
+admin.site.register(ExteriorsSection)
+
+
+class ExteriorsTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = ExteriorsTabSection
+        fields = '__all__'
+
+
+class ExteriorsTabSectionModelAdmin(admin.ModelAdmin):
+    form = ExteriorsTabSectionForm
+
+
+admin.site.register(ExteriorsTabSection, ExteriorsTabSectionModelAdmin)
+admin.site.register(InFlightVideoSection)
+
+
+class InFlightVideoTabSectionForm(forms.ModelForm):
+    file_name = forms.CharField(widget=FileSelectWidget)
+
+    class Meta:
+        model = InFlightVideoTabSection
+        fields = '__all__'
+
+
+class InFlightVideoTabSectionModelAdmin(admin.ModelAdmin):
+    form = InFlightVideoTabSectionForm
+
+
+admin.site.register(InFlightVideoTabSection, InFlightVideoTabSectionModelAdmin)

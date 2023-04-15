@@ -22,6 +22,23 @@ from django.template import loader
     4. Hero Sub Headline: description"""
 
 
+class MyModelMixin(object):
+    @property
+    def get_id_city_model(self):
+        return self.model_section.model_city.id
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        name_image = self.image_name
+        if '{}' in name_image:
+            template_name = name_image.format(self.model_section.model_city.name_city.lower(),
+                                              self.model_section.model_city.code_city.lower())
+        else:
+            template_name = name_image
+        self.image_name = template_name
+        copy_and_full_rename(self.file_name, arg=template_name)
+        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+
 class City(models.Model):
     name_city = models.CharField(max_length=255, verbose_name='name_city')
     code_city = models.CharField(max_length=255, verbose_name='code_city')
@@ -130,6 +147,9 @@ class BodySubSectionDescription(models.Model):
     def get_name_city(self):
         return self.subsection_body.section_body.city_model.name_city
 
+    @property
+    def get_id_city_model(self):
+        return self.subsection_body.section_body.city_model.id
     def __str__(self):
         return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
 
@@ -247,7 +267,7 @@ Section: Campaign Types (*tabs stay the same)
 class CampaignTypesSection(models.Model):
     model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='campaign_types')
     title = models.CharField(max_length=255, verbose_name='section CampaignTypes title',
-                             default='Airport Campaign Types')
+                             default='An advertisers by category')
 
     @property
     def get_name_city(self):
@@ -264,6 +284,37 @@ class CampaignTypesSection(models.Model):
 
 
 class CampaignTypesSubSection(models.Model):
+    B2B = 'b2b'
+    CONFERENCE_PARTICIPANTS = 'conference_participants'
+    B2C = 'b2c'
+    Education = 'education'
+    Tourism = 'tourism'
+    Government = 'government'
+    Luxury = 'luxury'
+    Events = 'events'
+    Entertainment = 'entertainment'
+    Financial_and_Crypto = 'financial_and_crypto'
+    PSA___Non_Profits = 'psa_non_profits'
+    Healthcare = 'healthcare'
+
+    MY_CHOICES = (
+        (B2B, '1-B2B'),
+        (CONFERENCE_PARTICIPANTS, '2-Conference Participants'),
+        (B2C, '3-B2C'),
+        (Education, '4-Education'),
+        (Tourism, '5-Tourism'),
+        (Government, '6-Government'),
+        (Luxury, '7-Luxury'),
+        (Events, '8-Events'),
+        (Entertainment, '9-Entertainment'),
+        (Financial_and_Crypto, '10-Financial and Crypto'),
+        (PSA___Non_Profits, '11-PSA & Non-Profits'),
+        (Healthcare, '12-Healthcare'),
+
+    )
+
+    tag_name = models.CharField(max_length=100, choices=MY_CHOICES)
+
     subsection_body = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
                                         related_name='subsection_campaign_types')
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
@@ -280,6 +331,9 @@ class CampaignTypesSubSection(models.Model):
         self.image_name = template_name
         copy_and_full_rename(self.file_name, arg=template_name)
         return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    @property
+    def get_tag_name_html_display(self):
+        return self.get_tag_name_display()
     @property
     def get_name_city(self):
         return self.subsection_body.model_city.name_city
@@ -331,23 +385,24 @@ class MediaSolutionsSection(models.Model):
         return f"MediaSolutionsSection - {self.model_city.name_city}"
 
 
-class MediaSolutionsTabSection(models.Model):
+class MediaSolutionsTabSection(MyModelMixin, models.Model):
     model_section = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE,
                                       related_name='media_solutions_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        name_image = self.image_name
-        if '{}' in name_image:
-            template_name = name_image.format(self.model_section.model_city.name_city.lower(),
-                                              self.model_section.model_city.code_city.lower())
-        else:
-            template_name = name_image
-        self.image_name = template_name
-        copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     name_image = self.image_name
+    #     if '{}' in name_image:
+    #         template_name = name_image.format(self.model_section.model_city.name_city.lower(),
+    #                                           self.model_section.model_city.code_city.lower())
+    #     else:
+    #         template_name = name_image
+    #     self.image_name = template_name
+    #     copy_and_full_rename(self.file_name, arg=template_name)
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
     @property
     def get_name_city(self):
         return self.model_section.model_city.name_city
@@ -355,11 +410,178 @@ class MediaSolutionsTabSection(models.Model):
     def __str__(self):
         return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
 
+    # class Meta:
+    #     abstract=True
+
+
+#
+
+class StaticSolutions(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_static_solutions')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"StaticSolutionsSection - {self.model_city.name_city}"
+
+
+class StaticSolutionsTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(StaticSolutions, on_delete=models.CASCADE,
+                                      related_name='static_solutions_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+class AirlineClubLoungesSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_airline_club_lounges')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"AirlineClubLoungesSection - {self.model_city.name_city}"
+
+
+class AirlineClubLoungesTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(AirlineClubLoungesSection, on_delete=models.CASCADE,
+                                      related_name='airline_club_lounges_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+class SecurityAreaSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_security_area')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"SecurityAreaSection - {self.model_city.name_city}"
+
+
+class SecurityAreaSectionTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(SecurityAreaSection, on_delete=models.CASCADE,
+                                      related_name='section_security_area_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+class WiFiSponsorShipsSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_wifi_sponsorships')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"WiFiSponsorshipsSection - {self.model_city.name_city}"
+
+
+class WiFiSponsorShipsSectionTab(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(WiFiSponsorShipsSection, on_delete=models.CASCADE,
+                                      related_name='section_wifi_sponsorships_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+class ExperientialSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_experiential')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"SecurityAreaSection - {self.model_city.name_city}"
+
+
+class ExperientialTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(ExperientialSection, on_delete=models.CASCADE,
+                                      related_name='section_experiential_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+# Exteriors
+
+
+class ExteriorsSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_exteriors')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"ExteriorsSection - {self.model_city.name_city}"
+
+
+class ExteriorsTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(ExteriorsSection, on_delete=models.CASCADE,
+                                      related_name='section_exteriors_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+#
+# # In-Flight Video
+#
+class InFlightVideoSection(models.Model):
+    model_city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_in_flight_video')
+
+    @property
+    def get_name_city(self):
+        return self.model_city.name_city
+
+    def __str__(self):
+        return f"ExteriorsSection - {self.model_city.name_city}"
+
+
+class InFlightVideoTabSection(MyModelMixin, models.Model):
+    model_section = models.ForeignKey(InFlightVideoSection, on_delete=models.CASCADE,
+                                      related_name='section_in_flight_video_tab')
+    image_name = models.CharField(max_length=255)
+    count_paragraphs = models.IntegerField(null=True, default=1)
+    file_name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+
+
+#
 
 ################################################################################################################
 def get_dict(id_):
     dict_data_template = dict()
-    obj_city = City.objects.first()  # TODO
+    obj_city = City.objects.filter(pk=id_).first()  # TODO
 
     dict_data_template['name_city'] = obj_city.name_city
     dict_data_template['object_city'] = obj_city
@@ -392,9 +614,9 @@ def get_dict(id_):
     if camp.exists():
         model_campaign_types = camp.first()
 
-        list_title_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__title',
+        list_tags_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__tag_name',
                                                                              flat=True)
-        dict_data_template['list_title_campaign_types'] = list_title_campaign_types
+        dict_data_template['list_title_campaign_types'] = list_tags_campaign_types
         dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
 
     solutions_models = MediaSolutionsSection.objects.filter(model_city=id_)
@@ -403,15 +625,72 @@ def get_dict(id_):
         dict_data_template.update(
             {f'tab{index}': obj.image_name for index, obj in
              enumerate(solutions_models.first().media_solutions_tab.all())})
+
+    static_solutions = StaticSolutions.objects.filter(model_city=id_)
+    if static_solutions.exists():
+        dict_data_template['static_solutions_list'] = static_solutions.first().static_solutions_tab.all()
+        dict_data_template.update(
+            {f'tab_static_solutions{index}': obj.image_name for index, obj in
+             enumerate(static_solutions.first().static_solutions_tab.all())})
+
+    section_airline_club = AirlineClubLoungesSection.objects.filter(model_city=id_)
+    if section_airline_club.exists():
+        dict_data_template['airline_club_lounges_list'] = section_airline_club.first().airline_club_lounges_tab.all()
+        dict_data_template.update(
+            {f'tab_airline_club_lounges{index}': obj.image_name for index, obj in
+             enumerate(section_airline_club.first().airline_club_lounges_tab.all())})
+
+    section_security_area = SecurityAreaSection.objects.filter(model_city=id_)
+    if section_security_area.exists():
+        dict_data_template['section_security_area_list'] = section_security_area.first().section_security_area_tab.all()
+        dict_data_template.update(
+            {f'tab_section_security_area{index}': obj.image_name for index, obj in
+             enumerate(section_security_area.first().section_security_area_tab.all())})
+    section_wifi_sponsorships = WiFiSponsorShipsSection.objects.filter(model_city=id_)
+    if section_wifi_sponsorships.exists():
+        dict_data_template[
+            'section_wifi_sponsorships_list'] = section_wifi_sponsorships.first().section_wifi_sponsorships_tab.all()
+        dict_data_template.update(
+            {f'tab_section_wifi_sponsorships{index}': obj.image_name for index, obj in
+             enumerate(section_wifi_sponsorships.first().section_wifi_sponsorships_tab.all())})
+    section_experiential = ExperientialSection.objects.filter(model_city=id_)
+    if section_experiential.exists():
+        dict_data_template[
+            'section_experiential_list'] = section_experiential.first().section_experiential_tab.all()
+        dict_data_template.update(
+            {f'tab_section_experiential{index}': obj.image_name for index, obj in
+             enumerate(section_experiential.first().section_experiential_tab.all())})
+    section_exteriors = ExteriorsSection.objects.filter(model_city=id_)
+    if section_exteriors.exists():
+        dict_data_template[
+            'section_exteriors_list'] = section_exteriors.first().section_exteriors_tab.all()
+        dict_data_template.update(
+            {f'tab_section_exteriors{index}': obj.image_name for index, obj in
+             enumerate(section_exteriors.first().section_exteriors_tab.all())})
+
+    section_in_flight_video = InFlightVideoSection.objects.filter(model_city=id_)
+    if section_in_flight_video.exists():
+        dict_data_template[
+            'section_in_flight_video_list'] = section_in_flight_video.first().section_in_flight_video_tab.all()
+        dict_data_template.update(
+            {f'tab_section_in_flight_video{index}': obj.image_name for index, obj in
+             enumerate(section_in_flight_video.first().section_in_flight_video_tab.all())})
     return dict_data_template
 
 
 @receiver(post_save)
 def get_create_html(sender, instance, created, **kwargs):
     list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection', 'CampaignTypesSubSectionDescription',
-                      'CampaignTypesSubSection', 'CampaignTypesSection', 'BodySubSectionDescription')
+                      'CampaignTypesSubSection', 'CampaignTypesSection', 'BodySubSectionDescription',
+                      'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
+                      'SecurityAreaSectionTabSection',
+                      'AirlineClubLoungesTabSection', 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
     if sender.__name__ in list_of_models:
-        context = get_dict(id_=1)
+
+        if not hasattr(sender, 'get_id_city_model'):
+            return
+
+        context = get_dict(id_=instance.get_id_city_model)
         path_dir_template = "templates/app_air"
         path = os.path.dirname(os.path.abspath(__file__))
         directory = os.path.join(path)
