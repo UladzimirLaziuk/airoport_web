@@ -27,6 +27,10 @@ class MyModelMixin(object):
     def get_id_city_model(self):
         return self.model_section.model_city.id
 
+    @property
+    def get_name_city(self):
+        return self.model_section.model_city.name_city
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         name_image = self.image_name
         if '{}' in name_image:
@@ -36,7 +40,8 @@ class MyModelMixin(object):
             template_name = name_image
         self.image_name = template_name
         copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+        return super().save(force_insert=force_insert, force_update=force_update, using=using,
+                            update_fields=update_fields)
 
 
 class City(models.Model):
@@ -150,6 +155,7 @@ class BodySubSectionDescription(models.Model):
     @property
     def get_id_city_model(self):
         return self.subsection_body.section_body.city_model.id
+
     def __str__(self):
         return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
 
@@ -298,18 +304,18 @@ class CampaignTypesSubSection(models.Model):
     Healthcare = 'healthcare'
 
     MY_CHOICES = (
-        (B2B, '1-B2B'),
-        (CONFERENCE_PARTICIPANTS, '2-Conference Participants'),
-        (B2C, '3-B2C'),
-        (Education, '4-Education'),
-        (Tourism, '5-Tourism'),
-        (Government, '6-Government'),
-        (Luxury, '7-Luxury'),
-        (Events, '8-Events'),
-        (Entertainment, '9-Entertainment'),
-        (Financial_and_Crypto, '10-Financial and Crypto'),
-        (PSA___Non_Profits, '11-PSA & Non-Profits'),
-        (Healthcare, '12-Healthcare'),
+        (B2B, 'B2B'),
+        (CONFERENCE_PARTICIPANTS, 'Conference Participants'),
+        (B2C, 'B2C'),
+        (Education, 'Education'),
+        (Tourism, 'Tourism'),
+        (Government, 'Government'),
+        (Luxury, 'Luxury'),
+        (Events, 'Events'),
+        (Entertainment, 'Entertainment'),
+        (Financial_and_Crypto, 'Financial and Crypto'),
+        (PSA___Non_Profits, 'PSA & Non-Profits'),
+        (Healthcare, 'Healthcare'),
 
     )
 
@@ -331,9 +337,11 @@ class CampaignTypesSubSection(models.Model):
         self.image_name = template_name
         copy_and_full_rename(self.file_name, arg=template_name)
         return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
     @property
     def get_tag_name_html_display(self):
         return self.get_tag_name_display()
+
     @property
     def get_name_city(self):
         return self.subsection_body.model_city.name_city
@@ -615,7 +623,7 @@ def get_dict(id_):
         model_campaign_types = camp.first()
 
         list_tags_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__tag_name',
-                                                                             flat=True)
+                                                                            flat=True)
         dict_data_template['list_title_campaign_types'] = list_tags_campaign_types
         dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
 
@@ -697,8 +705,8 @@ def get_create_html(sender, instance, created, **kwargs):
         path_templates = f"{directory}/templates/app_air/{instance.get_name_city}.html"
         content = loader.render_to_string('app_air/index.html', context,
                                           request=None, using=None)
-        # with open('/home/vladimir/airoport_dir/airoport/probe.html', "w") as fh:
-        #     fh.write(content)
+        with open(f"{directory}/templates/app_air/cities_html/{instance.get_name_city.lower()}.html", "w") as fh:
+            fh.write(content)
         with open(path_templates, "w") as fh:
             fh.write(content)
             print(instance.get_name_city)

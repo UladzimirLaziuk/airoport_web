@@ -39,7 +39,7 @@ class CityView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         city_name = kwargs.get('city_name')
-        self.template_name = self.template_name.format(city_name)
+        self.template_name = self.template_name.format(city_name.lower())
         return super().get(request, *args, **kwargs)
 
 

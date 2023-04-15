@@ -161,6 +161,44 @@ class FileSelectWidget(forms.Select):
         self.choices = [(f, f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path, f))]
 
 
+# class FilesDropdownField(forms.ChoiceField):
+#     def __init__(self, path, *args, **kwargs):
+#         choices = []
+#         for root, dirs, files in os.walk(path):
+#             for file in files:
+#                 file_path = os.path.join(root, file)
+#                 choices.append((file_path, file_path.replace(path, "", 1)))
+#         super().__init__(choices=choices, *args, **kwargs)
+#
+# class FilesDropdownWidget(forms.Select):
+#     def __init__(self, attrs=None, choices=(), path=None):
+#         self.path = path
+#         super().__init__(attrs, choices)
+#
+#     def render(self, name, value, attrs=None, renderer=None):
+#         if value:
+#             value = value.replace("\\", "/")
+#         return super().render(name, value, attrs, renderer)
+#
+#     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+#         if value:
+#             value = value.replace("\\", "/")
+#         return super().create_option(name, value, label, selected, index, subindex, attrs)
+#
+#     def _get_choices(self):
+#         return self._choices
+#
+#     def _set_choices(self, value):
+#         self._choices = value
+#
+#     choices = property(_get_choices, _set_choices)
+#
+#     def build_attrs(self, attrs=None, extra_attrs=None, **kwargs):
+#         attrs = super().build_attrs(attrs, extra_attrs, **kwargs)
+#         attrs['path'] = self.path
+#         return attrs
+
+
 # Определяем новую форму
 class HeroForm(forms.ModelForm):
     file_name = forms.CharField(widget=FileSelectWidget)
