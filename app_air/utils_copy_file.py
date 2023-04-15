@@ -58,7 +58,7 @@ def copy_and_full_rename(filename, arg, path_static='static/img/home/'):
     for extension in list_extensions:
 
         new_basename = f"{arg}{extension}"
-        src = os.path.join(path_static, basename)
+        src = os.path.join('static/dir_basis_images', basename)
         dst = os.path.join(path_static, new_basename)
         if not os.path.exists(dst):
             shutil.copy(src, dst)

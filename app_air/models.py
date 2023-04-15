@@ -416,7 +416,8 @@ class MediaSolutionsTabSection(MyModelMixin, models.Model):
         return self.model_section.model_city.name_city
 
     def __str__(self):
-        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
     # class Meta:
     #     abstract=True
@@ -443,7 +444,8 @@ class StaticSolutionsTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class AirlineClubLoungesSection(models.Model):
@@ -465,7 +467,8 @@ class AirlineClubLoungesTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class SecurityAreaSection(models.Model):
@@ -487,7 +490,8 @@ class SecurityAreaSectionTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class WiFiSponsorShipsSection(models.Model):
@@ -509,7 +513,8 @@ class WiFiSponsorShipsSectionTab(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 class ExperientialSection(models.Model):
@@ -531,7 +536,8 @@ class ExperientialTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 # Exteriors
@@ -556,7 +562,8 @@ class ExteriorsTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 #
@@ -581,7 +588,8 @@ class InFlightVideoTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"
+        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+               f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
 #
