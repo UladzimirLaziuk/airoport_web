@@ -166,7 +166,9 @@ class FileSelectWidget(forms.Select):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         files_path = os.path.join(settings.BASE_DIR, 'static', 'dir_basis_images')
-        self.choices = [(f, f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path, f))]
+        # self.choices = [(f, f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path, f))]
+        self.choices = [(f, f) for f in os.listdir(files_path) if
+                        os.path.isfile(os.path.join(files_path, f)) and not f.endswith('.png')]
 
 
 # class FilesDropdownField(forms.ChoiceField):
@@ -265,19 +267,19 @@ class MediaSolutionsTabSectionForm(forms.ModelForm):
         fields = '__all__'
 
 
-class MyAdminSite(AdminSite):
-    def get_model_order(self, models):
-        # получить список всех моделей в порядке их определения
-        all_models = [m for m in models.values()]
-        all_models = [m for sublist in all_models for m in sublist]
-
-        # добавить City и Country в начало списка
-        order = [City] + [m for m in all_models if m not in [City]]
-
-        return order
-
-
-admin_site = MyAdminSite(name='admin')
+# class MyAdminSite(AdminSite):
+#     def get_model_order(self, models):
+#         # получить список всех моделей в порядке их определения
+#         all_models = [m for m in models.values()]
+#         all_models = [m for sublist in all_models for m in sublist]
+#
+#         # добавить City и Country в начало списка
+#         order = [City] + [m for m in all_models if m not in [City]]
+#
+#         return order
+#
+#
+# admin_site = MyAdminSite(name='admin')
 
 
 class MediaSolutionsTabSectionModelAdmin(admin.ModelAdmin):

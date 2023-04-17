@@ -57,6 +57,9 @@ class City(models.Model):
 
     def __str__(self):
         return f'{self.name_city}'
+    class Meta:
+        verbose_name = 'page title'
+        verbose_name_plural = '1 Page Title'
 
 
 class HeroSection(models.Model):
@@ -81,6 +84,10 @@ class HeroSection(models.Model):
     def __str__(self):
         return f"HeroHeadline - {self.city_model.name_city}"
 
+    class Meta:
+        verbose_name = 'Hero Image '
+        verbose_name_plural = '2. Hero Image'
+
 
 class HeroSubHeadline(models.Model):
     section_hero = models.OneToOneField(HeroSection, on_delete=models.CASCADE, related_name='section_hero_subheading')
@@ -93,7 +100,9 @@ class HeroSubHeadline(models.Model):
     def __str__(self):
         return f"HeroSubHeadline - {self.section_hero.city_model.name_city}"
 
-
+    class Meta:
+        verbose_name = 'Hero Sub Headline'
+        verbose_name_plural = '3. Hero Sub Headlines'
 '''
 Section: Body
 
