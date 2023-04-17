@@ -13,9 +13,15 @@ from app_air.serializers import CitySerializer, HeroHeroSectionSerializer, BodyS
     MediaSolutionsSectionSerializer
 
 from django.template import loader
+
+
 # Create your views here.
 def home(request):
     return render(request, 'app_air/index1.html', {'object_city': City.objects.first()})
+
+
+def probe(request):
+    return render(request, 'app_air/index1.html', {'object_campaign': CampaignTypesSubSection.objects.all()})
 
 
 def home_title(context=None, name_html=None):

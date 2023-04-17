@@ -26,6 +26,14 @@ import os
 from django.conf import settings
 
 
+class MyAdminSite(AdminSite):
+    def get_model_ordering(self, model):
+        return None
+
+
+admin_site = MyAdminSite()
+
+
 # class HeroModelInline(admin.StackedInline):
 #     model = HeroModel
 #     extra = 1
@@ -257,27 +265,90 @@ class MediaSolutionsTabSectionForm(forms.ModelForm):
         fields = '__all__'
 
 
+class MyAdminSite(AdminSite):
+    def get_model_order(self, models):
+        # получить список всех моделей в порядке их определения
+        all_models = [m for m in models.values()]
+        all_models = [m for sublist in all_models for m in sublist]
+
+        # добавить City и Country в начало списка
+        order = [City] + [m for m in all_models if m not in [City]]
+
+        return order
+
+
+admin_site = MyAdminSite(name='admin')
+
+
 class MediaSolutionsTabSectionModelAdmin(admin.ModelAdmin):
     form = MediaSolutionsTabSectionForm
+    order_with_respect_to = None
 
+
+# admin_site.site.register(City)
+
+# admin.site.register(HeroSection, HeroModelAdmin)
+# admin.site.register(HeroSubHeadline)
+# admin.site.register(BodySection, BodySectionModelAdmin)
+# admin.site.register(BodySubSection)
+# admin.site.register(BodySubSectionDescription)
+# admin.site.register(AudienceSection)
+# admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
+# admin.site.register(AudienceSubSectionDescription)
+# admin.site.register(CampaignTypesSection)
+# # admin.site.register(CampaignTypesHeroSection)
+# admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
+# admin.site.register(CampaignTypesSubSectionDescription)
+# admin.site.register(MediaSolutionsSection)
+# admin.site.register(MediaSolutionsTabSection,
+#                     MediaSolutionsTabSectionModelAdmin)
+
+
+class MyAdminSite(admin.AdminSite):
+    # def get_app_list(self, request):
+    #     app_list = super().get_app_list(request)
+    #     # reorder the app list as you like
+    #     return app_list
+    def get_app_list(self, request, app_label=None):
+        """
+        Return a sorted list of all the installed apps that have been
+        registered in this site.
+        """
+        app_dict = self._build_app_dict(request, app_label)
+
+        # Sort the apps alphabetically.
+        app_list = sorted(app_dict.values(), key=lambda x: x["name"].lower())
+
+        # Sort the models alphabetically within each app.
+        # for app in app_list:
+        #     app["models"].sort(key=lambda x: x["name"])
+
+        return app_list
+
+
+mysite = MyAdminSite()
+admin.site = mysite
+# from django.contrib.auth.models import User
+#
+# admin.site.register(User)
 
 admin.site.register(City)
+
 admin.site.register(HeroSection, HeroModelAdmin)
 admin.site.register(HeroSubHeadline)
 admin.site.register(BodySection, BodySectionModelAdmin)
 admin.site.register(BodySubSection)
-admin.site.register(BodySubSectionDescription)
+# admin.site.register(BodySubSectionDescription)
 admin.site.register(AudienceSection)
 admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
-admin.site.register(AudienceSubSectionDescription)
+# admin.site.register(AudienceSubSectionDescription)
 admin.site.register(CampaignTypesSection)
 # admin.site.register(CampaignTypesHeroSection)
 admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
-admin.site.register(CampaignTypesSubSectionDescription)
+# admin.site.register(CampaignTypesSubSectionDescription)
 admin.site.register(MediaSolutionsSection)
 admin.site.register(MediaSolutionsTabSection,
                     MediaSolutionsTabSectionModelAdmin)
-
 admin.site.register(StaticSolutions)
 
 
@@ -291,6 +362,7 @@ class StaticSolutionsTabSectionForm(forms.ModelForm):
 
 class StaticSolutionsTabSectionModelAdmin(admin.ModelAdmin):
     form = MediaSolutionsTabSectionForm
+    order = 0
 
 
 admin.site.register(StaticSolutionsTabSection, StaticSolutionsTabSectionModelAdmin)

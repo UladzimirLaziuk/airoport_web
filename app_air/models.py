@@ -83,7 +83,7 @@ class HeroSection(models.Model):
 
 
 class HeroSubHeadline(models.Model):
-    section_hero = models.ForeignKey(HeroSection, on_delete=models.CASCADE, related_name='section_hero_subheading')
+    section_hero = models.OneToOneField(HeroSection, on_delete=models.CASCADE, related_name='section_hero_subheading')
     description = models.TextField()
 
     @property
@@ -133,7 +133,7 @@ class BodySection(models.Model):
 class BodySubSection(models.Model):
     section_body = models.ForeignKey(BodySection, on_delete=models.CASCADE, related_name='tabs')
     title = models.CharField(max_length=255, verbose_name='subsection body title')
-
+    text = models.TextField()
     @property
     def get_name_city(self):
         return self.section_body.city_model.name_city
@@ -196,6 +196,7 @@ class AudienceSubSection(models.Model):
     image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
     audience_body = models.ForeignKey(AudienceSection, on_delete=models.CASCADE,
                                       related_name='accordions')
+    text = models.TextField()
     file_name = models.CharField(max_length=50, blank=True)
     title = models.CharField(max_length=255)
 
@@ -320,7 +321,7 @@ class CampaignTypesSubSection(models.Model):
     )
 
     tag_name = models.CharField(max_length=100, choices=MY_CHOICES)
-
+    text = models.TextField()
     subsection_body = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
                                         related_name='subsection_campaign_types')
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
@@ -632,6 +633,7 @@ def get_dict(id_):
 
         list_tags_campaign_types = CampaignTypesSection.objects.values_list('subsection_campaign_types__tag_name',
                                                                             flat=True)
+
         dict_data_template['list_title_campaign_types'] = list_tags_campaign_types
         dict_data_template['objects_subsection_campaign_types'] = model_campaign_types.subsection_campaign_types.all()
 
@@ -696,8 +698,8 @@ def get_dict(id_):
 
 @receiver(post_save)
 def get_create_html(sender, instance, created, **kwargs):
-    list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection', 'CampaignTypesSubSectionDescription',
-                      'CampaignTypesSubSection', 'CampaignTypesSection', 'BodySubSectionDescription',
+    list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection',
+                      'CampaignTypesSubSection', 'CampaignTypesSection',
                       'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
                       'SecurityAreaSectionTabSection',
                       'AirlineClubLoungesTabSection', 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')

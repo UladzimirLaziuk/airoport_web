@@ -2,10 +2,11 @@ asgiref==3.6.0
 backports.zoneinfo==0.2.1
 beautifulsoup4==4.12.0
 Django==4.1.7
+djangorestframework==3.14.0
+gunicorn==20.1.0
 Jinja2==3.1.2
 MarkupSafe==2.1.2
 pkg_resources==0.0.0
+pytz==2023.3
 soupsieve==2.4
 sqlparse==0.4.3
-
-djangorestframework~=3.14.0

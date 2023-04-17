@@ -78,7 +78,7 @@
               <div class="col-sm-full col-6-12 hero-home__content">
                 <!--b.hero-home__sup Airport Advertising Specialist-->
                 <h1 class="hero-home__title title-md2">{{ object_hero.title }}</h1>
-                <p class="text-big mg-t-16">{{ object_hero.description }}<br>Ready to get started?</p>
+                <p class="text-big mg-t-16">{{ object_hero.section_hero_subheading.description|safe }}<br>Ready to get started?</p>
                 <!--ul.list-ico.hero-home__list-->
                 <!--    li-->
                 <!--        i.icon-checkbox-checked-->
@@ -237,10 +237,10 @@
                           <div class="tabs__content__item" id="why-{{ items.title }}_{{ forloop.counter }}-airport">
                             <div class="content">
                               <h4>{{ items.title }}</h4>
-
-                                {% for obj_decs in items.paragraphs.all %}
-                                <p>{{obj_decs.text }}</p>
-                                    {%  endfor %}
+                                {{ items.text|safe }}
+{#                                {% for obj_decs in items.paragraphs.all %}#}
+{#                                <p>{{obj_decs.text }}</p>#}
+{#                                    {%  endfor %}#}
                             </div>
                           </div>
                             {%  endfor %}
@@ -302,9 +302,10 @@
                         <!-- Content-->
                         <div class="accordion__content">
                           <div class="content">
-                              {%  for items in accordion.paragraphs.all %}
-                            <p>{{ items.text }}</p>
-                                {%  endfor %}
+                            {{ accordion.text|safe }}
+{#                              {%  for items in accordion.paragraphs.all %}#}
+{#                            <p>{{ items.text }}</p>#}
+{#                                {%  endfor %}#}
                           </div>
                         </div>
                         <!-- Image-->
@@ -1098,9 +1099,10 @@
                             <div class="dashboard__content">
                               <div class="content">
                                 <h4 class="title-md">{{ obj.title }}</h4>
-                                  {% for obj_description in obj.subsection_campaign_types_description.all %}
-                                <p>{{ obj_description.description }}</p>
-                                {% endfor %}
+                                {{ obj.text|safe }}
+{#                                  {% for obj_description in obj.subsection_campaign_types_description.all %}#}
+{#                                <p>{{ obj_description.description }}</p>#}
+{#                                {% endfor %}#}
                               </div>
                             </div>
                           </div>
