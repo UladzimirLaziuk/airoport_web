@@ -61,7 +61,7 @@ class MyModelMixin(object):
         # else:
         #     template_name = name_image
         # self.image_name = template_name
-        copy_and_full_rename(self.file_name, arg=self.image_name)
+            copy_and_full_rename(self.file_name, arg=self.image_name)
         return super().save(*args, **kwargs)
 
 
