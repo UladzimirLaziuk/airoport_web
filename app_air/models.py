@@ -798,14 +798,14 @@ def get_create_html(sender, instance, created, **kwargs):
         path_dir_template = "templates/app_air"
         path = os.path.dirname(os.path.abspath(__file__))
         directory = os.path.join(path)
-        path_templates = f"{directory}/templates/app_air/{instance.get_name_city}.html"
+        path_templates = f"{directory}/templates/app_air/{instance.get_name_city.lower()}.html"
         content = loader.render_to_string('app_air/index.html', context,
                                           request=None, using=None)
         with open(f"{directory}/templates/app_air/cities_html/{instance.get_name_city.lower()}.html", "w") as fh:
             fh.write(content)
         with open(path_templates, "w") as fh:
             fh.write(content)
-            print(instance.get_name_city)
+            print(instance.get_name_city.lower())
             with open(path_templates, 'r+') as f:
                 lines = f.readlines()
                 f.seek(0)
