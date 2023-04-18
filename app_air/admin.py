@@ -158,8 +158,8 @@ class HeroAdmin(admin.ModelAdmin):
     form = MyForm
 
 
-class BodyAdmin(admin.ModelAdmin):
-    form = MyFormBody
+# class BodyAdmin(admin.ModelAdmin):
+#     form = MyFormBody
 
 
 class FileSelectWidget(forms.Select):
@@ -212,7 +212,7 @@ class FileSelectWidget(forms.Select):
 
 # Определяем новую форму
 class HeroForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(widget=FileSelectWidget(folder='hero'))
 
     class Meta:
         model = HeroSection
@@ -232,8 +232,8 @@ class BodySectionForm(forms.ModelForm):
         fields = '__all__'
 
 
-class BodySectionModelAdmin(admin.ModelAdmin):
-    form = BodySectionForm
+# class BodySectionModelAdmin(admin.ModelAdmin):
+#     form = BodySectionForm
 
 
 class AudienceSubSectionForm(forms.ModelForm):
@@ -330,8 +330,8 @@ class MyAdminSite(admin.AdminSite):
         return app_list
 
 
-mysite = MyAdminSite()
-admin.site = mysite
+
+admin.site = MyAdminSite()
 # from django.contrib.auth.models import User
 #
 # admin.site.register(User)
@@ -340,7 +340,7 @@ admin.site.register(City)
 
 admin.site.register(HeroSection, HeroModelAdmin)
 admin.site.register(HeroSubHeadline)
-admin.site.register(BodySection, BodySectionModelAdmin)
+admin.site.register(BodySection)
 admin.site.register(BodySubSection)
 # admin.site.register(BodySubSectionDescription)
 admin.site.register(AudienceSection)

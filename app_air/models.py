@@ -44,7 +44,8 @@ class MyModelMixin(object):
     #     return super().save(force_insert=force_insert, force_update=force_update, using=using,
     #                         update_fields=update_fields)
     def save(self, *args, **kwargs):
-        if not self.file_name:
+        is_new = not bool(self.pk)
+        if not self.file_name and is_new:
             index = self.get_count_parent_model()
             path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
             path_file = os.path.join(path_template, 'app_air/index_original.html')
@@ -89,7 +90,7 @@ class HeroSection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero')
     hero_image_name = models.CharField(max_length=255, verbose_name='hero image name')
     title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
-    file_name = models.CharField(max_length=50, blank=True, default='')
+    file_name = models.CharField(max_length=50, blank=True, default='home-hero3.jpg')
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if '{}' in self.hero_image_name:
@@ -143,7 +144,7 @@ class BodySection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_body')
     body_image_name = models.CharField(max_length=255, verbose_name='main body image name')
     section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
-    file_name = models.CharField(max_length=50, blank=True)
+    file_name = models.CharField(max_length=50, blank=True, default='why_airport_advertising.jpg')
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         name_image = self.body_image_name
@@ -639,8 +640,10 @@ class ExteriorsTabSection(MyModelMixin, models.Model):
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
+
     def get_count_parent_model(self):
         return self.model_section.section_exteriors_tab.count()
+
     def __str__(self):
         return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
@@ -667,8 +670,10 @@ class InFlightVideoTabSection(MyModelMixin, models.Model):
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
+
     def get_count_parent_model(self):
         return self.model_section.section_in_flight_video_tab.count()
+
     def __str__(self):
         return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
