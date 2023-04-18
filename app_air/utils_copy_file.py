@@ -102,6 +102,28 @@ def pase_page(webpage, patt_search=r'img/', file_path_to_write=None):
     write_html(file_path_to_write, content_new)
 
 
+def get_list_jpg_folder(folder_path='', index=0):
+    files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and f.endswith('.jpg')]
+    sorted_files = sorted(files, key=str.lower)
+    return sorted_files[index]
+
+
+def open_read_file(path_file):
+    with open(path_file, 'r', encoding="utf-8") as f:
+        webpage = f.read()
+
+    return webpage
+
+
+def get_jpg_default(path_file, patt_search=r'img/', index=0):
+    """@img/school-bg.png"""
+    webpage = open_read_file(path_file)
+    pattern = re.compile(rf'({patt_search})([^.]*).(jpg)')
+    find_iter_data = re.finditer(pattern, webpage)
+    dict_url = {m.group(): None for m in find_iter_data}
+    return list(dict_url)[index]
+
+
 def replace_static_urls_in_html_file(html_file_path: str, static_path: str = '', media_path: str = ''):
     """
     Заменяет в указанном файле все вхождения ссылок на статические и медиафайлы на ссылки вида

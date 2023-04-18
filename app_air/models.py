@@ -4,11 +4,12 @@ import shutil
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from django.template.loader import get_template
 from django.urls import reverse
 
 from airoport import settings
 from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, replace_static_urls_in_html_file, \
-    copy_and_full_rename
+    copy_and_full_rename, get_list_jpg_folder, get_jpg_default
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.template import loader
@@ -31,17 +32,36 @@ class MyModelMixin(object):
     def get_name_city(self):
         return self.model_section.model_city.name_city
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        name_image = self.image_name
-        if '{}' in name_image:
-            template_name = name_image.format(self.model_section.model_city.name_city.lower(),
-                                              self.model_section.model_city.code_city.lower())
-        else:
-            template_name = name_image
-        self.image_name = template_name
-        copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=force_insert, force_update=force_update, using=using,
-                            update_fields=update_fields)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     name_image = self.image_name
+    #     if '{}' in name_image:
+    #         template_name = name_image.format(self.model_section.model_city.name_city.lower(),
+    #                                           self.model_section.model_city.code_city.lower())
+    #     else:
+    #         template_name = name_image
+    #     self.image_name = template_name
+    #     copy_and_full_rename(self.file_name, arg=template_name)
+    #     return super().save(force_insert=force_insert, force_update=force_update, using=using,
+    #                         update_fields=update_fields)
+    def save(self, *args, **kwargs):
+        if not self.file_name:
+            index = self.get_count_parent_model()
+            path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
+            path_file = os.path.join(path_template, 'app_air/index_original.html')
+
+            # folder_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.photo_folder)
+            patt_search = rf'img/home/articles/{self.photo_folder}'
+            self.file_name = get_jpg_default(path_file=path_file, patt_search=patt_search, index=index)
+
+        # name_image = self.image_name
+        # if '{}' in name_image:
+        #     template_name = name_image.format(self.audience_body.section_body.name_city.lower(),
+        #                                       self.audience_body.section_body.code_city.lower())
+        # else:
+        #     template_name = name_image
+        # self.image_name = template_name
+        copy_and_full_rename(self.file_name, arg=self.image_name)
+        return super().save(*args, **kwargs)
 
 
 class City(models.Model):
@@ -49,14 +69,17 @@ class City(models.Model):
     code_city = models.CharField(max_length=255, verbose_name='code_city')
     page_title = models.CharField(max_length=255, verbose_name='Page Title')
 
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    def save(self, *args, **kwargs):
+        self.name_city = '-'.join(self.name_city.strip().split(' '))
+        return super().save(*args, **kwargs)
+
     @property
     def get_name_city(self):
         return self.name_city
 
     def __str__(self):
         return f'{self.name_city}'
+
     class Meta:
         verbose_name = 'page title'
         verbose_name_plural = '1 Page Title'
@@ -66,7 +89,7 @@ class HeroSection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero')
     hero_image_name = models.CharField(max_length=255, verbose_name='hero image name')
     title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
-    file_name = models.CharField(max_length=50, blank=True)
+    file_name = models.CharField(max_length=50, blank=True, default='')
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if '{}' in self.hero_image_name:
@@ -103,6 +126,8 @@ class HeroSubHeadline(models.Model):
     class Meta:
         verbose_name = 'Hero Sub Headline'
         verbose_name_plural = '3. Hero Sub Headlines'
+
+
 '''
 Section: Body
 
@@ -143,6 +168,7 @@ class BodySubSection(models.Model):
     section_body = models.ForeignKey(BodySection, on_delete=models.CASCADE, related_name='tabs')
     title = models.CharField(max_length=255, verbose_name='subsection body title')
     text = models.TextField()
+
     @property
     def get_name_city(self):
         return self.section_body.city_model.name_city
@@ -201,24 +227,41 @@ class AudienceSection(models.Model):
         return f"AudienceSection- {self.section_body.name_city}"
 
 
-class AudienceSubSection(models.Model):
+class AudienceSubSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='audience')
     image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
     audience_body = models.ForeignKey(AudienceSection, on_delete=models.CASCADE,
                                       related_name='accordions')
     text = models.TextField()
-    file_name = models.CharField(max_length=50, blank=True)
+    file_name = models.CharField(max_length=50, blank=True, null=True)
     title = models.CharField(max_length=255)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        name_image = self.image_name
-        if '{}' in name_image:
-            template_name = name_image.format(self.audience_body.section_body.name_city.lower(),
-                                              self.audience_body.section_body.code_city.lower())
-        else:
-            template_name = name_image
-        self.image_name = template_name
-        copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    def get_count_parent_model(self):
+        return self.audience_body.accordions.count()
+
+    @property
+    def get_id_city_model(self):
+        return self.audience_body.section_body.id
+
+    # def save(self, *args, **kwargs):
+    #     if not self.file_name:
+    #         index = self.get_count_parent_model()
+    #         path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
+    #         path_file = os.path.join(path_template, 'app_air/index_original.html')
+    #
+    #         # folder_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.photo_folder)
+    #         patt_search = rf'img/home/articles/{self.photo_folder}'
+    #         self.file_name = get_jpg_default(path_file=path_file, patt_search=patt_search, index=index)
+    #
+    #     name_image = self.image_name
+    #     if '{}' in name_image:
+    #         template_name = name_image.format(self.audience_body.section_body.name_city.lower(),
+    #                                           self.audience_body.section_body.code_city.lower())
+    #     else:
+    #         template_name = name_image
+    #     self.image_name = template_name
+    #     copy_and_full_rename(self.file_name, arg=template_name)
+    #     return super().save(*args, **kwargs)
 
     @property
     def get_name_city(self):
@@ -299,7 +342,7 @@ class CampaignTypesSection(models.Model):
 #     title = models.CharField(max_length=255)
 
 
-class CampaignTypesSubSection(models.Model):
+class CampaignTypesSubSection(MyModelMixin, models.Model):
     B2B = 'b2b'
     CONFERENCE_PARTICIPANTS = 'conference_participants'
     B2C = 'b2c'
@@ -328,7 +371,7 @@ class CampaignTypesSubSection(models.Model):
         (Healthcare, 'Healthcare'),
 
     )
-
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='advertisers')
     tag_name = models.CharField(max_length=100, choices=MY_CHOICES)
     text = models.TextField()
     subsection_body = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
@@ -337,16 +380,16 @@ class CampaignTypesSubSection(models.Model):
     image_name = models.CharField(max_length=255)
     file_name = models.CharField(max_length=50, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        name_image = self.image_name
-        if '{}' in name_image:
-            template_name = name_image.format(self.subsection_body.model_city.name_city.lower(),
-                                              self.subsection_body.model_city.code_city.lower())
-        else:
-            template_name = name_image
-        self.image_name = template_name
-        copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     name_image = self.image_name
+    #     if '{}' in name_image:
+    #         template_name = name_image.format(self.subsection_body.model_city.name_city.lower(),
+    #                                           self.subsection_body.model_city.code_city.lower())
+    #     else:
+    #         template_name = name_image
+    #     self.image_name = template_name
+    #     copy_and_full_rename(self.file_name, arg=template_name)
+    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
 
     @property
     def get_tag_name_html_display(self):
@@ -355,6 +398,13 @@ class CampaignTypesSubSection(models.Model):
     @property
     def get_name_city(self):
         return self.subsection_body.model_city.name_city
+
+    def get_count_parent_model(self):
+        return self.subsection_body.subsection_campaign_types.count()
+
+    @property
+    def get_id_city_model(self):
+        return self.subsection_body.model_city.id
 
     def __str__(self):
         return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}-" \
@@ -404,6 +454,7 @@ class MediaSolutionsSection(models.Model):
 
 
 class MediaSolutionsTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE,
                                       related_name='media_solutions_tab')
     image_name = models.CharField(max_length=255)
@@ -424,6 +475,9 @@ class MediaSolutionsTabSection(MyModelMixin, models.Model):
     @property
     def get_name_city(self):
         return self.model_section.model_city.name_city
+
+    def get_count_parent_model(self):
+        return self.model_section.media_solutions_tab.count()
 
     def __str__(self):
         return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
@@ -447,6 +501,7 @@ class StaticSolutions(models.Model):
 
 
 class StaticSolutionsTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(StaticSolutions, on_delete=models.CASCADE,
                                       related_name='static_solutions_tab')
     image_name = models.CharField(max_length=255)
@@ -454,7 +509,7 @@ class StaticSolutionsTabSection(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -470,14 +525,18 @@ class AirlineClubLoungesSection(models.Model):
 
 
 class AirlineClubLoungesTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(AirlineClubLoungesSection, on_delete=models.CASCADE,
                                       related_name='airline_club_lounges_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
 
+    def get_count_parent_model(self):
+        return self.model_section.airline_club_lounges_tab.count()
+
     def __str__(self):
-        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -493,14 +552,18 @@ class SecurityAreaSection(models.Model):
 
 
 class SecurityAreaSectionTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(SecurityAreaSection, on_delete=models.CASCADE,
                                       related_name='section_security_area_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
 
+    def get_count_parent_model(self):
+        return self.model_section.section_security_area_tab.count()
+
     def __str__(self):
-        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -516,6 +579,7 @@ class WiFiSponsorShipsSection(models.Model):
 
 
 class WiFiSponsorShipsSectionTab(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(WiFiSponsorShipsSection, on_delete=models.CASCADE,
                                       related_name='section_wifi_sponsorships_tab')
     image_name = models.CharField(max_length=255)
@@ -523,7 +587,7 @@ class WiFiSponsorShipsSectionTab(MyModelMixin, models.Model):
     file_name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -539,14 +603,18 @@ class ExperientialSection(models.Model):
 
 
 class ExperientialTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(ExperientialSection, on_delete=models.CASCADE,
                                       related_name='section_experiential_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
 
+    def get_count_parent_model(self):
+        return self.model_section.section_experiential_tab.count()
+
     def __str__(self):
-        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -565,14 +633,16 @@ class ExteriorsSection(models.Model):
 
 
 class ExteriorsTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(ExteriorsSection, on_delete=models.CASCADE,
                                       related_name='section_exteriors_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
-
+    def get_count_parent_model(self):
+        return self.model_section.section_exteriors_tab.count()
     def __str__(self):
-        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -591,14 +661,16 @@ class InFlightVideoSection(models.Model):
 
 
 class InFlightVideoTabSection(MyModelMixin, models.Model):
+    photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(InFlightVideoSection, on_delete=models.CASCADE,
                                       related_name='section_in_flight_video_tab')
     image_name = models.CharField(max_length=255)
     count_paragraphs = models.IntegerField(null=True, default=1)
     file_name = models.CharField(max_length=50, blank=True)
-
+    def get_count_parent_model(self):
+        return self.model_section.section_in_flight_video_tab.count()
     def __str__(self):
-        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}"\
+        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 

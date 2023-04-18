@@ -163,12 +163,13 @@ class BodyAdmin(admin.ModelAdmin):
 
 
 class FileSelectWidget(forms.Select):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, folder='', empty_label='---------', **kwargs):
+        self.folder = folder
+        self.empty_label = empty_label
         super().__init__(*args, **kwargs)
-        files_path = os.path.join(settings.BASE_DIR, 'static', 'dir_basis_images')
-        # self.choices = [(f, f) for f in os.listdir(files_path) if os.path.isfile(os.path.join(files_path, f))]
-        self.choices = [(f, f) for f in os.listdir(files_path) if
-                        os.path.isfile(os.path.join(files_path, f)) and not f.endswith('.png')]
+        files_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.folder)
+        self.choices = [('', self.empty_label)] + [(f, f) for f in os.listdir(files_path) if
+                                                   os.path.isfile(os.path.join(files_path, f)) and f.endswith('.jpg')]
 
 
 # class FilesDropdownField(forms.ChoiceField):
@@ -236,11 +237,12 @@ class BodySectionModelAdmin(admin.ModelAdmin):
 
 
 class AudienceSubSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='audience'))
 
     class Meta:
         model = AudienceSubSection
         fields = '__all__'
+
 
 
 class AudienceSubSectionModelAdmin(admin.ModelAdmin):
@@ -248,7 +250,7 @@ class AudienceSubSectionModelAdmin(admin.ModelAdmin):
 
 
 class CampaignTypesSubSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='advertisers'))
 
     class Meta:
         model = CampaignTypesSubSection
@@ -260,7 +262,7 @@ class CampaignTypesSubSectionModelAdmin(admin.ModelAdmin):
 
 
 class MediaSolutionsTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = MediaSolutionsTabSection
@@ -355,7 +357,7 @@ admin.site.register(StaticSolutions)
 
 
 class StaticSolutionsTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = StaticSolutionsTabSection
@@ -372,7 +374,7 @@ admin.site.register(AirlineClubLoungesSection)
 
 
 class AirlineClubLoungesTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = AirlineClubLoungesTabSection
@@ -388,7 +390,7 @@ admin.site.register(SecurityAreaSection)
 
 
 class SecurityAreaSectionTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = SecurityAreaSectionTabSection
@@ -404,7 +406,7 @@ admin.site.register(WiFiSponsorShipsSection)
 
 
 class WiFiSponsorShipsSectionTabForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = WiFiSponsorShipsSectionTab
@@ -420,7 +422,7 @@ admin.site.register(ExperientialSection)
 
 
 class ExperientialTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = ExperientialTabSection
@@ -436,7 +438,7 @@ admin.site.register(ExteriorsSection)
 
 
 class ExteriorsTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = ExteriorsTabSection
@@ -452,7 +454,7 @@ admin.site.register(InFlightVideoSection)
 
 
 class InFlightVideoTabSectionForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget)
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
 
     class Meta:
         model = InFlightVideoTabSection
