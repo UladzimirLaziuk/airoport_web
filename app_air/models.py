@@ -47,11 +47,13 @@ class MyModelMixin(object):
         is_new = not bool(self.pk)
         if not self.file_name and is_new:
             if hasattr(self, 'text'):
-                string_text = ''
-                for paragraph in self.text.strip().split("\n"):
-                    string_text += f'\n<p>{paragraph}<p>'
-                self.text = string_text
-
+                if '<p>' not in self.text:
+                    string_text = ''
+                    for paragraph in self.text.strip().split("\n"):
+                        string_text += f'\n<p>{paragraph}</p>'
+                    self.text = string_text.strip()
+                else:
+                    self.text = self.text.strip()
             index = self.get_count_parent_model()
             path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
             path_file = os.path.join(path_template, 'app_air/index_original.html')
@@ -130,9 +132,10 @@ class HeroSubHeadline(models.Model):
 
     def save(self, *args, **kwargs):
         string_text = ''
-        for paragraph in self.description.strip().split("\n"):
-            string_text += f'\n<p>{paragraph}<p>'
-        self.description = string_text
+        if '<p>' not in self.description:
+            for paragraph in self.description.strip().split("\n"):
+                string_text += f'\n<p>{paragraph}</p>'
+            self.description = string_text.strip()
         return super().save(*args, **kwargs)
     # class Meta:
     #     verbose_name = 'Hero Sub Headline'
@@ -157,7 +160,7 @@ class BodySection(models.Model):
     section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
     file_name = models.CharField(max_length=50, blank=True, default='why_airport_advertising.jpg')
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         name_image = self.body_image_name
         if '{}' in name_image:
             template_name = name_image.format(self.city_model.name_city.lower(),
@@ -166,7 +169,7 @@ class BodySection(models.Model):
             template_name = name_image
         self.body_image_name = template_name
         copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+        return super().save(*args, **kwargs)
 
     @property
     def get_name_city(self):
@@ -187,9 +190,10 @@ class BodySubSection(models.Model):
 
     def save(self, *args, **kwargs):
         string_text = ''
-        for paragraph in self.text.strip().split("\n"):
-            string_text += f'\n<p>{paragraph}<p>'
-        self.text = string_text
+        if '<p>' not in self.text:
+            for paragraph in self.text.strip().split("\n"):
+                string_text += f'\n<p>{paragraph}</p>'
+            self.text = string_text.strip()
         return super().save(*args, **kwargs)
 
     def __str__(self):
@@ -203,9 +207,10 @@ class BodySubSectionDescription(models.Model):
 
     def save(self, *args, **kwargs):
         string_text = ''
-        for paragraph in self.text.strip().split("\n"):
-            string_text += f'\n<p>{paragraph}<p>'
-        self.text = string_text
+        if '<p>' not in self.text:
+            for paragraph in self.text.strip().split("\n"):
+                string_text += f'\n<p>{paragraph}</p>'
+            self.text = string_text.strip()
         return super().save(*args, **kwargs)
 
     @property
@@ -328,9 +333,10 @@ class AudienceSubSectionDescription(models.Model):
 
     def save(self, *args, **kwargs):
         string_text = ''
-        for paragraph in self.text.strip().split("\n"):
-            string_text += f'\n<p>{paragraph}<p>'
-        self.text = string_text
+        if '<p>' not in self.text:
+            for paragraph in self.text.strip().split("\n"):
+                string_text += f'\n<p>{paragraph}</p>'
+            self.text = string_text.strip()
         return super().save(*args, **kwargs)
 
     @property
@@ -494,9 +500,10 @@ class CampaignTypesSubSectionDescription(models.Model):
     #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
     def save(self, *args, **kwargs):
         string_text = ''
-        for paragraph in self.description.strip().split("\n"):
-            string_text += f'\n<p>{paragraph}<p>'
-        self.description = string_text
+        if '<p>' not in self.description:
+            for paragraph in self.description.strip().split("\n"):
+                string_text += f'\n<p>{paragraph}</p>'
+            self.description = string_text.strip()
         return super().save(*args, **kwargs)
 
     @property
@@ -910,8 +917,8 @@ def get_create_html(sender, instance, created, **kwargs):
     list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection',
                       # 'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
                       # 'SecurityAreaSectionTabSection',
-                      'AirlineClubLoungesTabSection', )
-                      # 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
+                      'AirlineClubLoungesTabSection',)
+    # 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
     if sender.__name__ in list_of_models:
 
         if not hasattr(sender, 'get_id_city_model'):
@@ -930,7 +937,6 @@ def get_create_html(sender, instance, created, **kwargs):
             fh.seek(0)
             fh.write('{% load static %}\n')
             fh.write(content)
-
 
         parse_file_compile(path_templates)
         replace_static_urls_in_html_file(path_templates)
