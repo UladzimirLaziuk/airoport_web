@@ -44,18 +44,18 @@ class MyModelMixin(object):
     #     return super().save(force_insert=force_insert, force_update=force_update, using=using,
     #                         update_fields=update_fields)
     def save(self, *args, **kwargs):
+        if hasattr(self, 'text'):
+            if '<p>' not in self.text:
+                string_text = ''
+                for paragraph in self.text.strip().split("\n"):
+                    if not paragraph.strip():
+                        continue
+                    string_text += f'\n<p>{paragraph}</p>'
+                self.text = string_text.strip()
+            else:
+                self.text = self.text.strip()
         is_new = not bool(self.pk)
         if not self.file_name and is_new:
-            if hasattr(self, 'text'):
-                if '<p>' not in self.text:
-                    string_text = ''
-                    for paragraph in self.text.strip().split("\n"):
-                        if not paragraph.strip():
-                            continue
-                        string_text += f'\n<p>{paragraph}</p>'
-                    self.text = string_text.strip()
-                else:
-                    self.text = self.text.strip()
             index = self.get_count_parent_model()
             path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
             path_file = os.path.join(path_template, 'app_air/index_original.html')
