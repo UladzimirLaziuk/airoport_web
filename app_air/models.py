@@ -809,7 +809,7 @@ def get_dict(id_):
     dict_data_template = dict()
     obj_city = City.objects.filter(pk=id_).first()  # TODO
 
-    dict_data_template['name_city'] = obj_city.name_city
+    dict_data_template['name_city'] = obj_city.name_city.lower()
     dict_data_template['object_city'] = obj_city
     dict_data_template['object_hero'] = obj_city.section_hero.first()
     name_section = BodySection.objects.values_list('section_name', flat=True)

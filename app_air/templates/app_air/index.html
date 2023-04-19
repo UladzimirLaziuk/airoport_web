@@ -224,7 +224,7 @@
                           <div class="tabs__list">
                             <ul class="list-tabs-boxed">
                                 {% for items in  body_subsection_object %}
-                                    <li data-tab-target="why-{{ items.title }}_{{ forloop.counter }}-airport">{{ items.title }}</li>
+                                    <li data-tab-target="why-{{ name_city }}-airport">{{ items.title }}</li>
                                 {%  endfor %}
 {#                              <li data-tab-target="about-airport-{{ name_city }}">{{ object_about_city_airport.title }}</li>#}
 {#                              <li data-tab-target="city-of-{{ name_city }}">{{ object_about_city.title }}</li>#}
@@ -234,7 +234,7 @@
                         <!-- Content, bottom part-->
                         <div class="tabs__content">
                             {% for items in  body_subsection_object %}
-                          <div class="tabs__content__item" id="why-{{ items.title }}_{{ forloop.counter }}-airport">
+                          <div class="tabs__content__item" id="why-{{ name_city }}-airport">
                             <div class="content">
                               <h4>{{ items.title }}</h4>
                                 {{ items.text|safe }}
