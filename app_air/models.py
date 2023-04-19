@@ -50,6 +50,8 @@ class MyModelMixin(object):
                 if '<p>' not in self.text:
                     string_text = ''
                     for paragraph in self.text.strip().split("\n"):
+                        if not paragraph.strip():
+                            continue
                         string_text += f'\n<p>{paragraph}</p>'
                     self.text = string_text.strip()
                 else:
@@ -134,6 +136,8 @@ class HeroSubHeadline(models.Model):
         string_text = ''
         if '<p>' not in self.description:
             for paragraph in self.description.strip().split("\n"):
+                if not paragraph.strip():
+                    continue
                 string_text += f'\n<p>{paragraph}</p>'
             self.description = string_text.strip()
         return super().save(*args, **kwargs)
@@ -192,6 +196,8 @@ class BodySubSection(models.Model):
         string_text = ''
         if '<p>' not in self.text:
             for paragraph in self.text.strip().split("\n"):
+                if not paragraph.strip():
+                    continue
                 string_text += f'\n<p>{paragraph}</p>'
             self.text = string_text.strip()
         return super().save(*args, **kwargs)
@@ -209,6 +215,8 @@ class BodySubSectionDescription(models.Model):
         string_text = ''
         if '<p>' not in self.text:
             for paragraph in self.text.strip().split("\n"):
+                if not paragraph.strip():
+                    continue
                 string_text += f'\n<p>{paragraph}</p>'
             self.text = string_text.strip()
         return super().save(*args, **kwargs)
