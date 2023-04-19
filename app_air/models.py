@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from airoport import settings
 from app_air.utils_copy_file import copy_and_rename_file, parse_file_compile, replace_static_urls_in_html_file, \
-    copy_and_full_rename, get_list_jpg_folder, get_jpg_default
+    copy_and_full_rename, get_list_jpg_folder, get_jpg_default, get_jpg_default_bs4
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.template import loader
@@ -30,7 +30,7 @@ class MyModelMixin(object):
 
     @property
     def get_name_city(self):
-        return self.model_section.model_city.name_city
+        return self.model_section.model_city.name_city.lower()
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     name_image = self.image_name
@@ -46,32 +46,34 @@ class MyModelMixin(object):
     def save(self, *args, **kwargs):
         is_new = not bool(self.pk)
         if not self.file_name and is_new:
+            if hasattr(self, 'text'):
+                string_text = ''
+                for paragraph in self.text.strip().split("\n"):
+                    string_text += f'\n<p>{paragraph}<p>'
+                self.text = string_text
+
             index = self.get_count_parent_model()
             path_template = os.path.join(settings.BASE_DIR, 'app_air/templates/')
             path_file = os.path.join(path_template, 'app_air/index_original.html')
 
             # folder_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.photo_folder)
-            patt_search = rf'img/home/articles/{self.photo_folder}'
-            self.file_name = get_jpg_default(path_file=path_file, patt_search=patt_search, index=index)
+            # patt_search = rf'img/home/articles/{self.photo_folder}'
+            # patt_search = self.patt_search
+            self.file_name = get_jpg_default_bs4(path_file=path_file, id_search=self.patt_search, index=index)
 
-        # name_image = self.image_name
-        # if '{}' in name_image:
-        #     template_name = name_image.format(self.audience_body.section_body.name_city.lower(),
-        #                                       self.audience_body.section_body.code_city.lower())
-        # else:
-        #     template_name = name_image
-        # self.image_name = template_name
+            self.image_name = self.get_image_name(self.image_name, self.file_name)
             copy_and_full_rename(self.file_name, arg=self.image_name)
         return super().save(*args, **kwargs)
 
 
+# atlanta_airport_atl_advertising_business_image
 class City(models.Model):
     name_city = models.CharField(max_length=255, verbose_name='name_city')
     code_city = models.CharField(max_length=255, verbose_name='code_city')
     page_title = models.CharField(max_length=255, verbose_name='Page Title')
 
     def save(self, *args, **kwargs):
-        self.name_city = '-'.join(self.name_city.strip().split(' '))
+        self.name_city = '-'.join(self.name_city.strip().split(' ')).lower()
         return super().save(*args, **kwargs)
 
     @property
@@ -81,36 +83,38 @@ class City(models.Model):
     def __str__(self):
         return f'{self.name_city}'
 
-    class Meta:
-        verbose_name = 'page title'
-        verbose_name_plural = '1 Page Title'
+    # class Meta:
+    #     verbose_name = 'page title'
+    #     verbose_name_plural = '1 Page Title'
 
 
 class HeroSection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_hero')
-    hero_image_name = models.CharField(max_length=255, verbose_name='hero image name')
+    hero_image_name = models.CharField(max_length=255, verbose_name='hero image name',
+                                       default='{}_airport_advertising_hero_main')
     title = models.CharField(max_length=255, verbose_name='Hero Headline: title')
     file_name = models.CharField(max_length=50, blank=True, default='home-hero3.jpg')
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         if '{}' in self.hero_image_name:
             template_name = self.hero_image_name.format(self.city_model.name_city.lower(),
                                                         self.city_model.code_city.lower())
         else:
             template_name = self.hero_image_name
+        self.hero_image_name = template_name
         copy_and_full_rename(self.file_name, arg=template_name)
-        return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+        return super().save(*args, **kwargs)
 
     @property
     def get_name_city(self):
-        return self.city_model.name_city
+        return self.city_model.name_city.lower()
 
     def __str__(self):
         return f"HeroHeadline - {self.city_model.name_city}"
 
-    class Meta:
-        verbose_name = 'Hero Image '
-        verbose_name_plural = '2. Hero Image'
+    # class Meta:
+    #     verbose_name = 'Hero Image '
+    #     verbose_name_plural = '2. Hero Image'
 
 
 class HeroSubHeadline(models.Model):
@@ -119,14 +123,20 @@ class HeroSubHeadline(models.Model):
 
     @property
     def get_name_city(self):
-        return self.section_hero.city_model.name_city
+        return self.section_hero.city_model.name_city.lower()
 
     def __str__(self):
         return f"HeroSubHeadline - {self.section_hero.city_model.name_city}"
 
-    class Meta:
-        verbose_name = 'Hero Sub Headline'
-        verbose_name_plural = '3. Hero Sub Headlines'
+    def save(self, *args, **kwargs):
+        string_text = ''
+        for paragraph in self.description.strip().split("\n"):
+            string_text += f'\n<p>{paragraph}<p>'
+        self.description = string_text
+        return super().save(*args, **kwargs)
+    # class Meta:
+    #     verbose_name = 'Hero Sub Headline'
+    #     verbose_name_plural = '3. Hero Sub Headlines'
 
 
 '''
@@ -142,7 +152,8 @@ Section: Body
 
 class BodySection(models.Model):
     city_model = models.ForeignKey(City, on_delete=models.CASCADE, related_name='section_body')
-    body_image_name = models.CharField(max_length=255, verbose_name='main body image name')
+    body_image_name = models.CharField(max_length=255, verbose_name='main body image name',
+                                       default='{}_airport_{}_advertising_body_image')
     section_name = models.CharField(max_length=255, verbose_name='WhyAirport?', default='WhyAirport?')
     file_name = models.CharField(max_length=50, blank=True, default='why_airport_advertising.jpg')
 
@@ -159,7 +170,7 @@ class BodySection(models.Model):
 
     @property
     def get_name_city(self):
-        return self.city_model.name_city
+        return self.city_model.name_city.lower()
 
     def __str__(self):
         return f"BodySection - {self.city_model.name_city}"
@@ -172,7 +183,14 @@ class BodySubSection(models.Model):
 
     @property
     def get_name_city(self):
-        return self.section_body.city_model.name_city
+        return self.section_body.city_model.name_city.lower()
+
+    def save(self, *args, **kwargs):
+        string_text = ''
+        for paragraph in self.text.strip().split("\n"):
+            string_text += f'\n<p>{paragraph}<p>'
+        self.text = string_text
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} - {self.section_body.city_model.name_city}"
@@ -182,18 +200,24 @@ class BodySubSectionDescription(models.Model):
     text = models.TextField()
     subsection_body = models.ForeignKey(BodySubSection, on_delete=models.CASCADE,
                                         related_name='paragraphs')
-    count_paragraphs = models.IntegerField(null=True, default=1)
+
+    def save(self, *args, **kwargs):
+        string_text = ''
+        for paragraph in self.text.strip().split("\n"):
+            string_text += f'\n<p>{paragraph}<p>'
+        self.text = string_text
+        return super().save(*args, **kwargs)
 
     @property
     def get_name_city(self):
-        return self.subsection_body.section_body.city_model.name_city
+        return self.subsection_body.section_body.city_model.name_city.lower()
 
     @property
     def get_id_city_model(self):
         return self.subsection_body.section_body.city_model.id
 
     def __str__(self):
-        return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city} -{self.count_paragraphs}"
+        return f"{self.subsection_body.title} - {self.subsection_body.section_body.city_model.name_city}"
 
 
 """
@@ -222,15 +246,17 @@ class AudienceSection(models.Model):
 
     @property
     def get_name_city(self):
-        return self.section_body.name_city
+        return self.section_body.name_city.lower()
 
     def __str__(self):
         return f"AudienceSection- {self.section_body.name_city}"
 
 
 class AudienceSubSection(MyModelMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='audiences')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='audience')
-    image_name = models.CharField(max_length=255, verbose_name='audience subsection image name')
+    image_name = models.CharField(max_length=255, verbose_name='audience subsection image name',
+                                  default='{}_airport_{}_advertising_{}_image')
     audience_body = models.ForeignKey(AudienceSection, on_delete=models.CASCADE,
                                       related_name='accordions')
     text = models.TextField()
@@ -240,9 +266,27 @@ class AudienceSubSection(MyModelMixin, models.Model):
     def get_count_parent_model(self):
         return self.audience_body.accordions.count()
 
+    @staticmethod
+    def get_first_element(filename):
+        elements = filename.split('_')
+
+        first_element = elements[0]
+
+        if len(first_element) < 6 and len(elements) > 1:
+            # first_element = '_'.join([first_element, elements[1]])
+            return elements[1]
+
+        return first_element
+
     @property
     def get_id_city_model(self):
         return self.audience_body.section_body.id
+
+    def get_image_name(self, image_name, filename):
+        filename = os.path.basename(filename)
+        # name, file_extension = os.path.splitext(filename)
+        part_name = self.get_first_element(filename)
+        return image_name.format(self.get_name_city, self.get_code_city, part_name)
 
     # def save(self, *args, **kwargs):
     #     if not self.file_name:
@@ -266,7 +310,11 @@ class AudienceSubSection(MyModelMixin, models.Model):
 
     @property
     def get_name_city(self):
-        return self.audience_body.section_body.name_city
+        return self.audience_body.section_body.name_city.lower()
+
+    @property
+    def get_code_city(self):
+        return self.audience_body.section_body.code_city.lower()
 
     def __str__(self):
         return f"AudienceSubSection - {self.audience_body.section_body.name_city}-" \
@@ -277,19 +325,21 @@ class AudienceSubSectionDescription(models.Model):
     text = models.TextField()
     audience_subsection_model = models.ForeignKey(AudienceSubSection, on_delete=models.CASCADE,
                                                   related_name='paragraphs')
-    count_paragraphs = models.IntegerField(null=True, default=1)
 
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     self.count_paragraphs += self.audience_subsection_model.paragraphs.count()
-    #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    def save(self, *args, **kwargs):
+        string_text = ''
+        for paragraph in self.text.strip().split("\n"):
+            string_text += f'\n<p>{paragraph}<p>'
+        self.text = string_text
+        return super().save(*args, **kwargs)
+
     @property
     def get_name_city(self):
-        return self.audience_subsection_model.audience_body.section_body.name_city
+        return self.audience_subsection_model.audience_body.section_body.name_city.lower()
 
     def __str__(self):
         return f"AudienceSubSectionDescription -" \
-               f" {self.audience_subsection_model.audience_body.section_body.name_city}" \
-               f"-{self.count_paragraphs}"
+               f" {self.audience_subsection_model.audience_body.section_body.name_city}"
 
 
 """
@@ -331,7 +381,7 @@ class CampaignTypesSection(models.Model):
 
     @property
     def get_name_city(self):
-        return self.model_city.name_city
+        return self.model_city.name_city.lower()
 
     def __str__(self):
         return f"CampaignTypesSection - {self.model_city.name_city}"
@@ -372,13 +422,16 @@ class CampaignTypesSubSection(MyModelMixin, models.Model):
         (Healthcare, 'Healthcare'),
 
     )
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='advertisers')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='advertisers')
     tag_name = models.CharField(max_length=100, choices=MY_CHOICES)
+
     text = models.TextField()
     subsection_body = models.ForeignKey(CampaignTypesSection, on_delete=models.CASCADE,
                                         related_name='subsection_campaign_types')
     title = models.CharField(max_length=255, verbose_name='subsection campaign types title')
-    image_name = models.CharField(max_length=255)
+
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
     file_name = models.CharField(max_length=50, blank=True)
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -398,7 +451,7 @@ class CampaignTypesSubSection(MyModelMixin, models.Model):
 
     @property
     def get_name_city(self):
-        return self.subsection_body.model_city.name_city
+        return self.subsection_body.model_city.name_city.lower()
 
     def get_count_parent_model(self):
         return self.subsection_body.subsection_campaign_types.count()
@@ -406,6 +459,25 @@ class CampaignTypesSubSection(MyModelMixin, models.Model):
     @property
     def get_id_city_model(self):
         return self.subsection_body.model_city.id
+
+    @property
+    def get_code_city(self):
+        return self.subsection_body.model_city.code_city.lower()
+
+    @staticmethod
+    def get_first_element(filename):
+        elements = filename.split('_')
+
+        first_element = elements[0]
+
+        if len(first_element) < 6 and len(elements) > 1:
+            # first_element = '_'.join([first_element, elements[1]])
+            return elements[1]
+
+        return first_element
+
+    def get_image_name(self, image_name, *args):
+        return image_name.format(self.get_name_city, self.get_code_city, self.tag_name)
 
     def __str__(self):
         return f"CampaignTypesSubSection - {self.subsection_body.model_city.name_city}-" \
@@ -417,20 +489,24 @@ class CampaignTypesSubSectionDescription(models.Model):
     subsection_model = models.ForeignKey(CampaignTypesSubSection, on_delete=models.CASCADE,
                                          related_name='subsection_campaign_types_description')
 
-    count_paragraphs = models.IntegerField(null=True, default=1)
-
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
     #     self.count_paragraphs += self.subsection_model.subsection_campaign_types_description.count()
     #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+    def save(self, *args, **kwargs):
+        string_text = ''
+        for paragraph in self.description.strip().split("\n"):
+            string_text += f'\n<p>{paragraph}<p>'
+        self.description = string_text
+        return super().save(*args, **kwargs)
+
     @property
     def get_name_city(self):
-        return self.subsection_model.subsection_body.model_city.name_city
+        return self.subsection_model.subsection_body.model_city.name_city.lower()
 
     def __str__(self):
         return f"CampaignTypesSubSectionDescription -" \
                f" {self.subsection_model.subsection_body.model_city.name_city}" \
-               f"-{'-'.join(self.subsection_model.image_name.split('_')[-2:])}" \
-               f"-{self.count_paragraphs}"
+               f"-{'-'.join(self.subsection_model.image_name.split('_')[-2:])}"
 
 
 """
@@ -448,18 +524,43 @@ class MediaSolutionsSection(models.Model):
 
     @property
     def get_name_city(self):
-        return self.model_city.name_city
+        return self.model_city.name_city.lower()
 
     def __str__(self):
         return f"MediaSolutionsSection - {self.model_city.name_city}"
 
 
-class MediaSolutionsTabSection(MyModelMixin, models.Model):
+class SolutionMixin:
+
+    def get_image_name(self, image_name, *args):
+        basename = os.path.basename(self.file_name)
+        name_part = basename.split('a1')[0]
+        return image_name.format(self.get_name_city, self.get_code_city, name_part)
+
+    @property
+    def get_code_city(self):
+        return self.model_section.model_city.code_city.lower()
+
+    @property
+    def get_name_city(self):
+        return self.model_section.model_city.name_city.lower()
+
+    @property
+    def get_id_city_model(self):
+        return self.model_section.model_city.id
+
+    # def get_count_parent_model(self):
+    #     return self.model_section.media_solutions_tab.count()
+
+
+# Digital Spectaculars Image (austin_airport_aus_advertising_digital_spectacular_image)
+class MediaSolutionsTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='digital-solutions0')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(MediaSolutionsSection, on_delete=models.CASCADE,
                                       related_name='media_solutions_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -472,16 +573,25 @@ class MediaSolutionsTabSection(MyModelMixin, models.Model):
     #     self.image_name = template_name
     #     copy_and_full_rename(self.file_name, arg=template_name)
     #     return super().save(force_insert=False, force_update=False, using=None, update_fields=None)
-
-    @property
-    def get_name_city(self):
-        return self.model_section.model_city.name_city
-
+    # def get_image_name(self, image_name):
+    #     name_part = self.file_name.split('a1')[0] + 'image'
+    #     return image_name.format(self.get_name_city, self.get_code_city, name_part)
+    #
+    # def get_code_city(self):
+    #     return self.subsection_body.model_city.code_city
+    #
+    # @property
+    # def get_name_city(self):
+    #     return self.model_section.model_city.name_city
+    #
+    # def get_id_city_model(self):
+    #     return self.model_section.model_city.id
+    #
     def get_count_parent_model(self):
         return self.model_section.media_solutions_tab.count()
 
     def __str__(self):
-        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"MediaSolutionsTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
     # class Meta:
@@ -495,22 +605,26 @@ class StaticSolutions(models.Model):
 
     @property
     def get_name_city(self):
-        return self.model_city.name_city
+        return self.model_city.name_city.lower()
 
     def __str__(self):
         return f"StaticSolutionsSection - {self.model_city.name_city}"
 
 
-class StaticSolutionsTabSection(MyModelMixin, models.Model):
+class StaticSolutionsTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='static-solutions1')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(StaticSolutions, on_delete=models.CASCADE,
                                       related_name='static_solutions_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
+    def get_count_parent_model(self):
+        return self.model_section.static_solutions_tab.count()
+
     def __str__(self):
-        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"StaticSolutionsTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -525,19 +639,20 @@ class AirlineClubLoungesSection(models.Model):
         return f"AirlineClubLoungesSection - {self.model_city.name_city}"
 
 
-class AirlineClubLoungesTabSection(MyModelMixin, models.Model):
+class AirlineClubLoungesTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='airline-club-lounges2')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(AirlineClubLoungesSection, on_delete=models.CASCADE,
                                       related_name='airline_club_lounges_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     def get_count_parent_model(self):
         return self.model_section.airline_club_lounges_tab.count()
 
     def __str__(self):
-        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"AirlineClubLoungesTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -552,19 +667,20 @@ class SecurityAreaSection(models.Model):
         return f"SecurityAreaSection - {self.model_city.name_city}"
 
 
-class SecurityAreaSectionTabSection(MyModelMixin, models.Model):
+class SecurityAreaSectionTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='security-area3')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(SecurityAreaSection, on_delete=models.CASCADE,
                                       related_name='section_security_area_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     def get_count_parent_model(self):
         return self.model_section.section_security_area_tab.count()
 
     def __str__(self):
-        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"SecurityAreaSectionTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -579,16 +695,20 @@ class WiFiSponsorShipsSection(models.Model):
         return f"WiFiSponsorshipsSection - {self.model_city.name_city}"
 
 
-class WiFiSponsorShipsSectionTab(MyModelMixin, models.Model):
+class WiFiSponsorShipsSectionTab(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='wifi-sponsorships4')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(WiFiSponsorShipsSection, on_delete=models.CASCADE,
                                       related_name='section_wifi_sponsorships_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
+    def get_count_parent_model(self):
+        return self.model_section.section_wifi_sponsorships_tab.count()
+
     def __str__(self):
-        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"WiFiSponsorshipsTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -603,19 +723,20 @@ class ExperientialSection(models.Model):
         return f"SecurityAreaSection - {self.model_city.name_city}"
 
 
-class ExperientialTabSection(MyModelMixin, models.Model):
+class ExperientialTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='experiential5')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(ExperientialSection, on_delete=models.CASCADE,
                                       related_name='section_experiential_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     def get_count_parent_model(self):
         return self.model_section.section_experiential_tab.count()
 
     def __str__(self):
-        return f"ExperientialTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"ExperientialTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -633,19 +754,20 @@ class ExteriorsSection(models.Model):
         return f"ExteriorsSection - {self.model_city.name_city}"
 
 
-class ExteriorsTabSection(MyModelMixin, models.Model):
+class ExteriorsTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='exteriors6')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(ExteriorsSection, on_delete=models.CASCADE,
                                       related_name='section_exteriors_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     def get_count_parent_model(self):
         return self.model_section.section_exteriors_tab.count()
 
     def __str__(self):
-        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"ExteriorsTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -663,19 +785,20 @@ class InFlightVideoSection(models.Model):
         return f"ExteriorsSection - {self.model_city.name_city}"
 
 
-class InFlightVideoTabSection(MyModelMixin, models.Model):
+class InFlightVideoTabSection(MyModelMixin, SolutionMixin, models.Model):
+    patt_search = models.CharField(max_length=255, verbose_name='patt_search_html', default='in-flight-video7')
     photo_folder = models.CharField(max_length=255, verbose_name='photo_folder', default='solutions')
     model_section = models.ForeignKey(InFlightVideoSection, on_delete=models.CASCADE,
                                       related_name='section_in_flight_video_tab')
-    image_name = models.CharField(max_length=255)
-    count_paragraphs = models.IntegerField(null=True, default=1)
+    image_name = models.CharField(max_length=255, default='{}_airport_{}_advertising_{}_image')
+
     file_name = models.CharField(max_length=50, blank=True)
 
     def get_count_parent_model(self):
         return self.model_section.section_in_flight_video_tab.count()
 
     def __str__(self):
-        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}-{self.count_paragraphs}" \
+        return f"InFlightVideoTabSection - {self.model_section.model_city.name_city}" \
                f"-{'-'.join(self.image_name.split('_')[-2:])}"
 
 
@@ -784,11 +907,11 @@ def get_dict(id_):
 
 @receiver(post_save)
 def get_create_html(sender, instance, created, **kwargs):
-    list_of_models = ('MediaSolutionsSection', 'MediaSolutionsTabSection',
-                      'CampaignTypesSubSection', 'CampaignTypesSection',
-                      'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
-                      'SecurityAreaSectionTabSection',
-                      'AirlineClubLoungesTabSection', 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
+    list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection',
+                      # 'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
+                      # 'SecurityAreaSectionTabSection',
+                      'AirlineClubLoungesTabSection', )
+                      # 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
     if sender.__name__ in list_of_models:
 
         if not hasattr(sender, 'get_id_city_model'):
@@ -804,15 +927,14 @@ def get_create_html(sender, instance, created, **kwargs):
         with open(f"{directory}/templates/app_air/cities_html/{instance.get_name_city.lower()}.html", "w") as fh:
             fh.write(content)
         with open(path_templates, "w") as fh:
+            fh.seek(0)
+            fh.write('{% load static %}\n')
             fh.write(content)
-            print(instance.get_name_city.lower())
-            with open(path_templates, 'r+') as f:
-                lines = f.readlines()
-                f.seek(0)
-                f.write('{% load static %}\n')
-                f.write(''.join(lines))
-            parse_file_compile(path_templates)
-            replace_static_urls_in_html_file(path_templates)
+
+
+        parse_file_compile(path_templates)
+        replace_static_urls_in_html_file(path_templates)
+
 
 # list_image_file = 'home-hero3.jpg', 'home-hero3.webp'
 # for file in list_image_file:
@@ -974,3 +1096,35 @@ def get_create_html(sender, instance, created, **kwargs):
 #             f.write(''.join(lines))
 #         parse_file_compile(path_templates)
 #         replace_static_urls_in_html_file(path_templates)
+@receiver(post_save, sender=City)
+def get_create_hero(sender, instance, created, **kwargs):
+    if created:
+        HeroSection.objects.create(city_model=instance)
+        BodySection.objects.create(city_model=instance)
+        CampaignTypesSection.objects.create(model_city=instance)
+        obj_media_solutions = MediaSolutionsSection.objects.create(model_city=instance)
+        for i in range(7):
+            MediaSolutionsTabSection.objects.create(model_section=obj_media_solutions)
+
+        obj_static_solution = StaticSolutions.objects.create(model_city=instance)
+        for i in range(7):
+            StaticSolutionsTabSection.objects.create(model_section=obj_static_solution)
+        obj_in_fly = InFlightVideoSection.objects.create(model_city=instance)
+        for i in range(4):
+            InFlightVideoTabSection.objects.create(model_section=obj_in_fly)
+        obj_exterior = ExteriorsSection.objects.create(model_city=instance)
+        for i in range(2):
+            ExteriorsTabSection.objects.create(model_section=obj_exterior)
+        obj_experiential = ExperientialSection.objects.create(model_city=instance)
+        for i in range(1):
+            ExperientialTabSection.objects.create(model_section=obj_experiential)
+        obj_wifi = WiFiSponsorShipsSection.objects.create(model_city=instance)
+        for i in range(1):
+            WiFiSponsorShipsSectionTab.objects.create(model_section=obj_wifi)
+        obj_security = SecurityAreaSection.objects.create(model_city=instance)
+        for i in range(2):
+            SecurityAreaSectionTabSection.objects.create(model_section=obj_security)
+
+        obj_airline = AirlineClubLoungesSection.objects.create(model_city=instance)
+        for i in range(5):
+            AirlineClubLoungesTabSection.objects.create(model_section=obj_airline)

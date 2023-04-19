@@ -2,6 +2,8 @@ import os
 import re
 import shutil
 
+from bs4 import BeautifulSoup
+
 
 def copy_and_rename_files(source_folder, destination_folder, directory_exclude_to_rename=None, new_prefix="new_"):
     """
@@ -115,6 +117,16 @@ def open_read_file(path_file):
     return webpage
 
 
+def get_jpg_default_bs4(path_file=None, id_search="", index=0):
+    dict_image = {}
+    with open(path_file, 'r') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+    block = soup.find('div', {'id': id_search})
+    images = block.find_all('img')
+    dict_url = dict.fromkeys((image['src'] for image in images if not image['src'].endswith('.webp')))
+    return os.path.basename(list(dict_url.keys())[index])
+
+
 def get_jpg_default(path_file, patt_search=r'img/', index=0):
     """@img/school-bg.png"""
     webpage = open_read_file(path_file)
@@ -137,7 +149,7 @@ def replace_static_urls_in_html_file(html_file_path: str, static_path: str = '',
         static_urls = re.findall(r'src="(.*.js)', content)
 
         # Заменяем найденные ссылки на ссылки вида `{% static 'path/to/static/file' %}`
-        for url in static_urls:
+        for url in set(static_urls):
             new_url = "src='{% static '" + url + "' %}'"
             content = content.replace(f'src="{url}"', new_url)
 

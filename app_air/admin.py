@@ -154,10 +154,6 @@ class AudienceSubSectionAdmin(admin.ModelAdmin):
     form = MyFormAudienceSubSection
 
 
-class HeroAdmin(admin.ModelAdmin):
-    form = MyForm
-
-
 # class BodyAdmin(admin.ModelAdmin):
 #     form = MyFormBody
 
@@ -212,7 +208,7 @@ class FileSelectWidget(forms.Select):
 
 # Определяем новую форму
 class HeroForm(forms.ModelForm):
-    file_name = forms.CharField(widget=FileSelectWidget(folder='hero'))
+    file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='hero'))
 
     class Meta:
         model = HeroSection
@@ -220,8 +216,18 @@ class HeroForm(forms.ModelForm):
 
 
 # Определяем модель
+class HeroModelSubHeadlineInline(admin.StackedInline):
+    model = HeroSubHeadline
+    extra = 1
+    can_delete = False
+    max_num = 1
+    # exclude = ('image_hero_url_jpg', 'image_hero_url_webp')
+
+
 class HeroModelAdmin(admin.ModelAdmin):
     form = HeroForm
+    inlines = (HeroModelSubHeadlineInline,)
+    fields = ('city_model', 'title')
 
 
 class BodySectionForm(forms.ModelForm):
@@ -232,8 +238,16 @@ class BodySectionForm(forms.ModelForm):
         fields = '__all__'
 
 
-# class BodySectionModelAdmin(admin.ModelAdmin):
-#     form = BodySectionForm
+class BodySubSectionInline(admin.StackedInline):
+    model = BodySubSection
+    extra = 3
+    can_delete = False
+    max_num = 3
+
+
+class BodySectionModelAdmin(admin.ModelAdmin):
+    inlines = (BodySubSectionInline,)
+    fields = ('city_model',)
 
 
 class AudienceSubSectionForm(forms.ModelForm):
@@ -244,9 +258,16 @@ class AudienceSubSectionForm(forms.ModelForm):
         fields = '__all__'
 
 
-
-class AudienceSubSectionModelAdmin(admin.ModelAdmin):
+class AudienceSubSectionInline(admin.StackedInline):
     form = AudienceSubSectionForm
+    model = AudienceSubSection
+    extra = 6
+    can_delete = False
+    max_num = 6
+    fields = ('title', 'text')
+
+class AudienceSectionModelAdmin(admin.ModelAdmin):
+    inlines = (AudienceSubSectionInline,)
 
 
 class CampaignTypesSubSectionForm(forms.ModelForm):
@@ -257,9 +278,17 @@ class CampaignTypesSubSectionForm(forms.ModelForm):
         fields = '__all__'
 
 
-class CampaignTypesSubSectionModelAdmin(admin.ModelAdmin):
+class CampaignTypesSubSectionInline(admin.StackedInline):
     form = CampaignTypesSubSectionForm
 
+    model = CampaignTypesSubSection
+    extra = 12
+    can_delete = False
+    max_num = 12
+    fields = ('tag_name', 'title', 'text')
+
+class CampaignTypesSectionModelAdmin(admin.ModelAdmin):
+    inlines = (CampaignTypesSubSectionInline, )
 
 class MediaSolutionsTabSectionForm(forms.ModelForm):
     file_name = forms.CharField(required=False, widget=FileSelectWidget(folder='solutions'))
@@ -289,30 +318,7 @@ class MediaSolutionsTabSectionModelAdmin(admin.ModelAdmin):
     order_with_respect_to = None
 
 
-# admin_site.site.register(City)
-
-# admin.site.register(HeroSection, HeroModelAdmin)
-# admin.site.register(HeroSubHeadline)
-# admin.site.register(BodySection, BodySectionModelAdmin)
-# admin.site.register(BodySubSection)
-# admin.site.register(BodySubSectionDescription)
-# admin.site.register(AudienceSection)
-# admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
-# admin.site.register(AudienceSubSectionDescription)
-# admin.site.register(CampaignTypesSection)
-# # admin.site.register(CampaignTypesHeroSection)
-# admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
-# admin.site.register(CampaignTypesSubSectionDescription)
-# admin.site.register(MediaSolutionsSection)
-# admin.site.register(MediaSolutionsTabSection,
-#                     MediaSolutionsTabSectionModelAdmin)
-
-
 class MyAdminSite(admin.AdminSite):
-    # def get_app_list(self, request):
-    #     app_list = super().get_app_list(request)
-    #     # reorder the app list as you like
-    #     return app_list
     def get_app_list(self, request, app_label=None):
         """
         Return a sorted list of all the installed apps that have been
@@ -330,30 +336,26 @@ class MyAdminSite(admin.AdminSite):
         return app_list
 
 
-
 admin.site = MyAdminSite()
-# from django.contrib.auth.models import User
-#
-# admin.site.register(User)
 
 admin.site.register(City)
 
 admin.site.register(HeroSection, HeroModelAdmin)
-admin.site.register(HeroSubHeadline)
-admin.site.register(BodySection)
-admin.site.register(BodySubSection)
+# admin.site.register(HeroSubHeadline)
+admin.site.register(BodySection, BodySectionModelAdmin)
+# admin.site.register(BodySubSection)
 # admin.site.register(BodySubSectionDescription)
-admin.site.register(AudienceSection)
-admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
+admin.site.register(AudienceSection, AudienceSectionModelAdmin)
+# admin.site.register(AudienceSubSection, AudienceSubSectionModelAdmin)
 # admin.site.register(AudienceSubSectionDescription)
-admin.site.register(CampaignTypesSection)
+admin.site.register(CampaignTypesSection, CampaignTypesSectionModelAdmin)
 # admin.site.register(CampaignTypesHeroSection)
-admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
+# admin.site.register(CampaignTypesSubSection, CampaignTypesSubSectionModelAdmin)
 # admin.site.register(CampaignTypesSubSectionDescription)
-admin.site.register(MediaSolutionsSection)
-admin.site.register(MediaSolutionsTabSection,
-                    MediaSolutionsTabSectionModelAdmin)
-admin.site.register(StaticSolutions)
+# admin.site.register(MediaSolutionsSection)
+# admin.site.register(MediaSolutionsTabSection,
+#                     MediaSolutionsTabSectionModelAdmin)
+# admin.site.register(StaticSolutions)
 
 
 class StaticSolutionsTabSectionForm(forms.ModelForm):
@@ -369,8 +371,8 @@ class StaticSolutionsTabSectionModelAdmin(admin.ModelAdmin):
     order = 0
 
 
-admin.site.register(StaticSolutionsTabSection, StaticSolutionsTabSectionModelAdmin)
-admin.site.register(AirlineClubLoungesSection)
+# admin.site.register(StaticSolutionsTabSection, StaticSolutionsTabSectionModelAdmin)
+# admin.site.register(AirlineClubLoungesSection)
 
 
 class AirlineClubLoungesTabSectionForm(forms.ModelForm):
@@ -384,9 +386,9 @@ class AirlineClubLoungesTabSectionForm(forms.ModelForm):
 class AirlineClubLoungesTabSectionModelAdmin(admin.ModelAdmin):
     form = AirlineClubLoungesTabSectionForm
 
-
-admin.site.register(AirlineClubLoungesTabSection, AirlineClubLoungesTabSectionModelAdmin)
-admin.site.register(SecurityAreaSection)
+#
+# admin.site.register(AirlineClubLoungesTabSection, AirlineClubLoungesTabSectionModelAdmin)
+# admin.site.register(SecurityAreaSection)
 
 
 class SecurityAreaSectionTabSectionForm(forms.ModelForm):
@@ -401,8 +403,8 @@ class SecurityAreaSectionTabSectionModelAdmin(admin.ModelAdmin):
     form = SecurityAreaSectionTabSectionForm
 
 
-admin.site.register(SecurityAreaSectionTabSection, SecurityAreaSectionTabSectionModelAdmin)
-admin.site.register(WiFiSponsorShipsSection)
+# admin.site.register(SecurityAreaSectionTabSection, SecurityAreaSectionTabSectionModelAdmin)
+# admin.site.register(WiFiSponsorShipsSection)
 
 
 class WiFiSponsorShipsSectionTabForm(forms.ModelForm):
@@ -417,8 +419,8 @@ class WiFiSponsorShipsSectionTabModelAdmin(admin.ModelAdmin):
     form = WiFiSponsorShipsSectionTabForm
 
 
-admin.site.register(WiFiSponsorShipsSectionTab, WiFiSponsorShipsSectionTabModelAdmin)
-admin.site.register(ExperientialSection)
+# admin.site.register(WiFiSponsorShipsSectionTab, WiFiSponsorShipsSectionTabModelAdmin)
+# admin.site.register(ExperientialSection)
 
 
 class ExperientialTabSectionForm(forms.ModelForm):
@@ -433,8 +435,8 @@ class ExperientialTabSectionModelAdmin(admin.ModelAdmin):
     form = ExperientialTabSectionForm
 
 
-admin.site.register(ExperientialTabSection, ExperientialTabSectionModelAdmin)
-admin.site.register(ExteriorsSection)
+# admin.site.register(ExperientialTabSection, ExperientialTabSectionModelAdmin)
+# admin.site.register(ExteriorsSection)
 
 
 class ExteriorsTabSectionForm(forms.ModelForm):
@@ -449,8 +451,7 @@ class ExteriorsTabSectionModelAdmin(admin.ModelAdmin):
     form = ExteriorsTabSectionForm
 
 
-admin.site.register(ExteriorsTabSection, ExteriorsTabSectionModelAdmin)
-admin.site.register(InFlightVideoSection)
+# admin.site.register(ExteriorsTabSection, ExteriorsTabSectionModelAdmin)
 
 
 class InFlightVideoTabSectionForm(forms.ModelForm):
@@ -465,4 +466,17 @@ class InFlightVideoTabSectionModelAdmin(admin.ModelAdmin):
     form = InFlightVideoTabSectionForm
 
 
-admin.site.register(InFlightVideoTabSection, InFlightVideoTabSectionModelAdmin)
+class InFlightVideoTabSectionModelInline(admin.StackedInline):
+    model = InFlightVideoTabSection
+    extra = 1
+    can_delete = False
+    max_num = 1
+    form = InFlightVideoTabSectionForm
+
+
+class InFlightVideoSectionAdmin(admin.ModelAdmin):
+    inlines = (InFlightVideoTabSectionModelInline,)
+
+#
+# admin.site.register(InFlightVideoSection, InFlightVideoSectionAdmin)
+# admin.site.register(InFlightVideoTabSection, InFlightVideoTabSectionModelAdmin)
