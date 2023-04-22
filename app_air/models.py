@@ -132,15 +132,15 @@ class HeroSubHeadline(models.Model):
     def __str__(self):
         return f"HeroSubHeadline - {self.section_hero.city_model.name_city}"
 
-    def save(self, *args, **kwargs):
-        string_text = ''
-        if '<p>' not in self.description:
-            for paragraph in self.description.strip().split("\n"):
-                if not paragraph.strip():
-                    continue
-                string_text += f'\n<p>{paragraph}</p>'
-            self.description = string_text.strip()
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     string_text = ''
+    #     if '<p>' not in self.description:
+    #         for paragraph in self.description.strip().split("\n"):
+    #             if not paragraph.strip():
+    #                 continue
+    #             string_text += f'\n<p>{paragraph}</p>'
+    #         self.description = string_text.strip()
+    #     return super().save(*args, **kwargs)
     # class Meta:
     #     verbose_name = 'Hero Sub Headline'
     #     verbose_name_plural = '3. Hero Sub Headlines'
