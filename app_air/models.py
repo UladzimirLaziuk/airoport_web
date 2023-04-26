@@ -922,7 +922,7 @@ def get_dict(id_):
 
 @receiver(post_save)
 def get_create_html(sender, instance, created, **kwargs):
-    list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection',
+    list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection', 'AudienceSubSection'
                       # 'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
                       # 'SecurityAreaSectionTabSection',
                       'AirlineClubLoungesTabSection',)
