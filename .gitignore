@@ -10,3 +10,4 @@ airoport/__pycache__/*
  app_air/templates/app_air/*
  static/img/home/*
  static/*
+ .idea/
