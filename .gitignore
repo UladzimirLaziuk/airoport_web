@@ -11,3 +11,4 @@ airoport/__pycache__/*
  static/img/home/*
  static/*
  .idea/
+ app_air/migrations/*
