@@ -35,7 +35,7 @@ class Command(BaseCommand):
         # dt = get_data_file('city_app.json')
         # print(code_dict)
 
-        for object_old_model in old.City.objects.all()[:5]:
+        for object_old_model in old.City.objects.all():
 
             # query_object = old.City.objects.filter(name_city='atlanta')
             query_object_model = object_old_model
