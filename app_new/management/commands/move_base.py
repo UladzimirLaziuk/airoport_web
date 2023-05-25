@@ -74,8 +74,10 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.SUCCESS(f'Successfully obj_audience_sub  {obj_audience_sub =}'))
 
                 obj_campaign = new.CampaignSection.objects.create(model_city=obj)
-                for dict_campaign in query_object_model. \
-                        campaign_types.first().subsection_campaign_types.values('title', 'tag_name', 'text'):
-                    dict_campaign.update({'subsection_body': obj_campaign})
-                    object_new_campaign = new.CampaignSubSection.objects.create(**dict_campaign)
-                    self.stdout.write(self.style.SUCCESS(f'Successfully object_new_campaign  {object_new_campaign =}'))
+                if query_object_model.campaign_types.first():
+                    for dict_campaign in query_object_model. \
+                            campaign_types.first().subsection_campaign_types.values('title', 'tag_name', 'text'):
+                        dict_campaign.update({'subsection_body': obj_campaign})
+                        object_new_campaign = new.CampaignSubSection.objects.create(**dict_campaign)
+                        self.stdout.write(
+                            self.style.SUCCESS(f'Successfully object_new_campaign  {object_new_campaign =}'))
