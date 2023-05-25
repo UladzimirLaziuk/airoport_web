@@ -163,9 +163,9 @@ class FileSelectWidget(forms.Select):
         self.folder = folder
         self.empty_label = empty_label
         super().__init__(*args, **kwargs)
-        files_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.folder)
-        self.choices = [('', self.empty_label)] + [(f, f) for f in os.listdir(files_path) if
-                                                   os.path.isfile(os.path.join(files_path, f)) and f.endswith('.jpg')]
+        # files_path = os.path.join(settings.BASE_DIR, 'static/img/home/articles', self.folder)
+        # self.choices = [('', self.empty_label)] + [(f, f) for f in os.listdir(files_path) if
+        #                                            os.path.isfile(os.path.join(files_path, f)) and f.endswith('.jpg')]
 
 
 # class FilesDropdownField(forms.ChoiceField):

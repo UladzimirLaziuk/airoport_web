@@ -920,34 +920,34 @@ def get_dict(id_):
     return dict_data_template
 
 
-@receiver(post_save)
-def get_create_html(sender, instance, created, **kwargs):
-    list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection', 'AudienceSubSection'
-                      # 'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
-                      # 'SecurityAreaSectionTabSection',
-                      'AirlineClubLoungesTabSection',)
-    # 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
-    if sender.__name__ in list_of_models:
-
-        if not hasattr(sender, 'get_id_city_model'):
-            return
-
-        context = get_dict(id_=instance.get_id_city_model)
-        path_dir_template = "templates/app_air"
-        path = os.path.dirname(os.path.abspath(__file__))
-        directory = os.path.join(path)
-        path_templates = f"{directory}/templates/app_air/{instance.get_name_city.lower()}.html"
-        content = loader.render_to_string('app_air/index.html', context,
-                                          request=None, using=None)
-        with open(f"{directory}/templates/app_air/cities_html/{instance.get_name_city.lower()}.html", "w") as fh:
-            fh.write(content)
-        with open(path_templates, "w") as fh:
-            fh.seek(0)
-            fh.write('{% load static %}\n')
-            fh.write(content)
-
-        parse_file_compile(path_templates)
-        replace_static_urls_in_html_file(path_templates)
+# @receiver(post_save)
+# def get_create_html(sender, instance, created, **kwargs):
+#     list_of_models = ('CampaignTypesSubSection', 'CampaignTypesSection', 'AudienceSubSection'
+#                       # 'InFlightVideoTabSection', 'ExperientialTabSection', 'WiFiSponsorShipsSectionTab',
+#                       # 'SecurityAreaSectionTabSection',
+#                       'AirlineClubLoungesTabSection',)
+#     # 'StaticSolutionsTabSection', 'MediaSolutionsTabSection')
+#     if sender.__name__ in list_of_models:
+#
+#         if not hasattr(sender, 'get_id_city_model'):
+#             return
+#
+#         context = get_dict(id_=instance.get_id_city_model)
+#         path_dir_template = "templates/app_air"
+#         path = os.path.dirname(os.path.abspath(__file__))
+#         directory = os.path.join(path)
+#         path_templates = f"{directory}/templates/app_air/{instance.get_name_city.lower()}.html"
+#         content = loader.render_to_string('app_air/index.html', context,
+#                                           request=None, using=None)
+#         with open(f"{directory}/templates/app_air/cities_html/{instance.get_name_city.lower()}.html", "w") as fh:
+#             fh.write(content)
+#         with open(path_templates, "w") as fh:
+#             fh.seek(0)
+#             fh.write('{% load static %}\n')
+#             fh.write(content)
+#
+#         parse_file_compile(path_templates)
+#         replace_static_urls_in_html_file(path_templates)
 
 
 # list_image_file = 'home-hero3.jpg', 'home-hero3.webp'

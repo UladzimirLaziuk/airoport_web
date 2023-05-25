@@ -1,0 +1,35 @@
+{
+  "digital": [
+    "img/articles/ad-examples/digital_example_1.webp",
+    "img/articles/ad-examples/digital_example_2.webp",
+    "img/articles/ad-examples/digital_example_3.webp",
+    "img/articles/ad-examples/digital_example_4.webp",
+    "img/articles/ad-examples/digital_example_5.webp",
+    "img/articles/ad-examples/digital_example_6.webp",
+    "img/articles/ad-examples/digital_example_7.webp",
+    "img/articles/ad-examples/digital_example_8.webp",
+    "img/articles/ad-examples/digital_example_9.webp"
+  ],
+  "static": [
+    "img/articles/ad-examples/static_example_1.webp",
+    "img/articles/ad-examples/static_example_2.webp",
+    "img/articles/ad-examples/static_example_3.webp",
+    "img/articles/ad-examples/static_example_4.webp",
+    "img/articles/ad-examples/static_example_5.webp",
+    "img/articles/ad-examples/static_example_6.webp",
+    "img/articles/ad-examples/static_example_7.webp",
+    "img/articles/ad-examples/static_example_8.webp",
+    "img/articles/ad-examples/static_example_9.webp"
+  ],
+  "other": [
+    "img/articles/ad-examples/other_example_1.webp",
+    "img/articles/ad-examples/other_example_2.webp",
+    "img/articles/ad-examples/other_example_3.webp",
+    "img/articles/ad-examples/other_example_4.webp",
+    "img/articles/ad-examples/other_example_5.webp",
+    "img/articles/ad-examples/other_example_6.webp",
+    "img/articles/ad-examples/other_example_7.webp",
+    "img/articles/ad-examples/other_example_8.webp",
+    "img/articles/ad-examples/other_example_9.webp"
+  ]
+}

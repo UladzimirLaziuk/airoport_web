@@ -51,16 +51,19 @@ def copy_and_rename_file(filename, arg, path_static='static/img/home/'):
     shutil.copy(src, dst)
 
 
-def copy_and_full_rename(filename, arg, path_static='static/img/home/'):
+def copy_and_full_rename(filename, arg, path_target='static/dir_basis_images',
+                         path_static='static/img/articles/audience/', webp=True):
     basename = os.path.basename(filename)
     name, file_extension = os.path.splitext(basename)
-
-    list_extensions = ['.webp', file_extension]
+    if webp:
+        list_extensions = set(['.webp', file_extension])
+    else:
+        list_extensions = [file_extension]
 
     for extension in list_extensions:
 
         new_basename = f"{arg}{extension}"
-        src = os.path.join('static/dir_basis_images', basename)
+        src = os.path.join(path_target, basename)
         dst = os.path.join(path_static, new_basename)
         if not os.path.exists(dst):
             shutil.copy(src, dst)
@@ -121,11 +124,20 @@ def get_jpg_default_bs4(path_file=None, id_search="", index=0):
     dict_image = {}
     with open(path_file, 'r') as file:
         soup = BeautifulSoup(file, 'html.parser')
-    block = soup.find('div', {'id': id_search})
+    block = soup.find('section', {'id': id_search})
     images = block.find_all('img')
     dict_url = dict.fromkeys((image['src'] for image in images if not image['src'].endswith('.webp')))
     return os.path.basename(list(dict_url.keys())[index])
 
+
+def get_jpg_default_bs4_webp(path_file=None, id_search="", index=0):
+    dict_image = {}
+    with open(path_file, 'r') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+    block = soup.find('section', {'id': id_search})
+    images = block.find_all('img')
+    dict_url = dict.fromkeys((image['src'] for image in images))
+    return os.path.basename(list(dict_url.keys())[index])
 
 def get_jpg_default(path_file, patt_search=r'img/', index=0):
     """@img/school-bg.png"""

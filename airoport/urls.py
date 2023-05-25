@@ -19,6 +19,7 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('new/', include('app_new.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('', views.probe, name='probe'),
     path('city/<str:city_name>/', CityView.as_view(), name='city'),
