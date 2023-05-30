@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from . import models
-from .models import City, WhyCityAirport, AboutAirportCity, AboutCity
+from .models import City
 
 
 class HeroSubHeadlineSerializer(serializers.ModelSerializer):
@@ -32,22 +32,22 @@ class HeroHeroSectionSerializer(serializers.ModelSerializer):
 #     return request.build_absolute_uri(cover_image_url)
 
 
-class WhyCityAirportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WhyCityAirport
-        fields = 'why_title', 'description'
+# class WhyCityAirportSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = WhyCityAirport
+#         fields = 'why_title', 'description'
 
 
-class AboutAirportCitySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = AboutAirportCity
-        fields = 'about_title', 'description'
+# class AboutAirportCitySerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = AboutAirportCity
+#         fields = 'about_title', 'description'
 
 
-class AboutCitySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = AboutCity
-        fields = 'about_title', 'description'
+# class AboutCitySerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = AboutCity
+#         fields = 'about_title', 'description'
 
 
 class BodySubSectionDescriptionSerializer(serializers.HyperlinkedModelSerializer):
@@ -57,19 +57,22 @@ class BodySubSectionDescriptionSerializer(serializers.HyperlinkedModelSerializer
 
 
 class BodySubSectionSerializer(serializers.HyperlinkedModelSerializer):
-    subsection_body_description = BodySubSectionDescriptionSerializer(many=True)
+    paragraphs = BodySubSectionDescriptionSerializer(many=True)
 
     class Meta:
         model = models.BodySubSection
         fields = '__all__'
 
 
+
 class BodySectionSerializer(serializers.HyperlinkedModelSerializer):
-    subsection_body = BodySubSectionSerializer(many=True)
+    tabs = BodySubSectionSerializer(many=True)
 
     class Meta:
         model = models.BodySection
         fields = '__all__'
+
+
 
 
 class AudienceSubSectionDescriptionSerializer(serializers.HyperlinkedModelSerializer):
@@ -79,7 +82,7 @@ class AudienceSubSectionDescriptionSerializer(serializers.HyperlinkedModelSerial
 
 
 class AudienceSubSectionSerializer(serializers.HyperlinkedModelSerializer):
-    audience_subsection_descriptions = AudienceSubSectionDescriptionSerializer(many=True)
+    paragraphs = AudienceSubSectionDescriptionSerializer(many=True)
 
     class Meta:
         model = models.AudienceSubSection
@@ -87,26 +90,58 @@ class AudienceSubSectionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AudienceSectionSerializer(serializers.HyperlinkedModelSerializer):
-    audience_subsection = AudienceSubSectionSerializer(many=True)
+    accordions = AudienceSubSectionSerializer(many=True)
 
     class Meta:
         model = models.AudienceSection
         fields = '__all__'
 
 
+class CampaignTypesSubSectionDescriptionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.CampaignTypesSubSectionDescription
+        fields = '__all__'
+
+
+class CampaignTypesSubSectionSerializer(serializers.HyperlinkedModelSerializer):
+    subsection_campaign_types_description = CampaignTypesSubSectionDescriptionSerializer(many=True)
+
+    class Meta:
+        model = models.CampaignTypesSubSection
+        fields = '__all__'
+
+
+class CampaignTypesSectionSerializer(serializers.HyperlinkedModelSerializer):
+    subsection_campaign_types = CampaignTypesSubSectionSerializer(many=True)
+
+    class Meta:
+        model = models.CampaignTypesSection
+        fields = '__all__'
+
+
+class MediaSolutionsTabSectionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.MediaSolutionsTabSection
+        fields = '__all__'
+
+
+class MediaSolutionsSectionSerializer(serializers.HyperlinkedModelSerializer):
+    media_solutions_tab = MediaSolutionsTabSectionSerializer(many=True)
+
+    class Meta:
+        model = models.MediaSolutionsSection
+        fields = '__all__'
+
+
+
 class CitySerializer(serializers.HyperlinkedModelSerializer):
     section_hero = HeroHeroSectionSerializer(many=True)
     section_body = BodySectionSerializer(many=True)
     section_audience = AudienceSectionSerializer(many=True)
+    section_media_solutions = MediaSolutionsSectionSerializer(many=True)
 
     class Meta:
         model = models.City
         fields = '__all__'
 
-    def update(self, instance, validated_data):
-        print('')
-        section_hero = validated_data.pop('section_hero')
-        section_body = validated_data.pop('section_body')
-        section_audience = validated_data.pop('section_audience')
 
-        return super().update(instance, validated_data)

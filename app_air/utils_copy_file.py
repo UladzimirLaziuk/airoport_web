@@ -2,6 +2,8 @@ import os
 import re
 import shutil
 
+from bs4 import BeautifulSoup
+
 
 def copy_and_rename_files(source_folder, destination_folder, directory_exclude_to_rename=None, new_prefix="new_"):
     """
@@ -49,6 +51,24 @@ def copy_and_rename_file(filename, arg, path_static='static/img/home/'):
     shutil.copy(src, dst)
 
 
+def copy_and_full_rename(filename, arg, path_target='static/dir_basis_images',
+                         path_static='static/img/articles/audience/', webp=True):
+    basename = os.path.basename(filename)
+    name, file_extension = os.path.splitext(basename)
+    if webp:
+        list_extensions = set(['.webp', file_extension])
+    else:
+        list_extensions = [file_extension]
+
+    for extension in list_extensions:
+
+        new_basename = f"{arg}{extension}"
+        src = os.path.join(path_target, basename)
+        dst = os.path.join(path_static, new_basename)
+        if not os.path.exists(dst):
+            shutil.copy(src, dst)
+
+
 def open_read_file(path_file):
     with open(path_file, 'r', encoding="utf-8") as f:
         webpage = f.read()
@@ -87,6 +107,47 @@ def pase_page(webpage, patt_search=r'img/', file_path_to_write=None):
     write_html(file_path_to_write, content_new)
 
 
+def get_list_jpg_folder(folder_path='', index=0):
+    files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and f.endswith('.jpg')]
+    sorted_files = sorted(files, key=str.lower)
+    return sorted_files[index]
+
+
+def open_read_file(path_file):
+    with open(path_file, 'r', encoding="utf-8") as f:
+        webpage = f.read()
+
+    return webpage
+
+
+def get_jpg_default_bs4(path_file=None, id_search="", index=0):
+    dict_image = {}
+    with open(path_file, 'r') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+    block = soup.find('section', {'id': id_search})
+    images = block.find_all('img')
+    dict_url = dict.fromkeys((image['src'] for image in images if not image['src'].endswith('.webp')))
+    return os.path.basename(list(dict_url.keys())[index])
+
+
+def get_jpg_default_bs4_webp(path_file=None, id_search="", index=0):
+    dict_image = {}
+    with open(path_file, 'r') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+    block = soup.find('section', {'id': id_search})
+    images = block.find_all('img')
+    dict_url = dict.fromkeys((image['src'] for image in images))
+    return os.path.basename(list(dict_url.keys())[index])
+
+def get_jpg_default(path_file, patt_search=r'img/', index=0):
+    """@img/school-bg.png"""
+    webpage = open_read_file(path_file)
+    pattern = re.compile(rf'({patt_search})([^.]*).(jpg)')
+    find_iter_data = re.finditer(pattern, webpage)
+    dict_url = {m.group(): None for m in find_iter_data}
+    return list(dict_url)[index]
+
+
 def replace_static_urls_in_html_file(html_file_path: str, static_path: str = '', media_path: str = ''):
     """
     Заменяет в указанном файле все вхождения ссылок на статические и медиафайлы на ссылки вида
@@ -100,7 +161,7 @@ def replace_static_urls_in_html_file(html_file_path: str, static_path: str = '',
         static_urls = re.findall(r'src="(.*.js)', content)
 
         # Заменяем найденные ссылки на ссылки вида `{% static 'path/to/static/file' %}`
-        for url in static_urls:
+        for url in set(static_urls):
             new_url = "src='{% static '" + url + "' %}'"
             content = content.replace(f'src="{url}"', new_url)
 

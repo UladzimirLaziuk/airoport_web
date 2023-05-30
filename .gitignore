@@ -2,7 +2,14 @@
 venv/
 
 *.json
-db.sqlite3
+db1.sqlite3
 
-app_air/__pycache__/
+app_air/__pycache__/*
 airoport/__pycache__/
+airoport/__pycache__/*
+app_air/templates/app_air/*
+#static/img/home/*
+#static/*
+.idea/
+app_air/migrations/*
+app_new/migrations/*
